@@ -1,0 +1,24 @@
+#myTable {
+    background-color: red;
+}
+#topLabel {
+    background-color: blue;
+}
+#sideLabel {
+    background-color: green;
+}
+#constantsLabel {
+    background-color: orange;
+}
+#tableNameLabel {
+    background-color: pink;
+}
+#container {
+    margin: 5px;
+    padding: 5px;
+    background-color: black;
+}
+
+.blueCell {
+    background-color: blue;
+}
