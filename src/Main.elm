@@ -3,6 +3,7 @@ module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 
 
@@ -25,6 +26,8 @@ main =
 type alias Model =
     { urlSetId : Int
     , debugBreadcrumb : String
+    , currentUrl : String
+    , myTableModel : TableModel
     }
 
 
@@ -65,6 +68,8 @@ init _ =
     ( Model
         0
         "dummy debug"
+        "https://google.com"
+        myTableModel
     , Cmd.none
     )
 
@@ -76,13 +81,22 @@ init _ =
 type Msg
     = FormInput String
     | AddColumnButtonClicked
+    | CellClicked CellViewModel
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model
-    , Cmd.none
-    )
+    case msg of
+        CellClicked cellViewModel -> 
+            ( {model 
+                | currentUrl = cellViewModel.label
+                }
+            , Cmd.none
+            )
+        _ ->
+            ( model
+            , Cmd.none
+            )
 
 
 
@@ -98,7 +112,7 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view model =
     div [id "container"] 
     [ div [id "nothing"] [ text "nothing"]
@@ -107,9 +121,10 @@ view model =
     , sideLabel
     , constantsLabel
     , div [id "myTable"] [renderTable myTableModel]
+    , div [id "urlView"] [text model.currentUrl]
     ]
 
-renderTable : TableModel -> Html msg
+renderTable : TableModel -> Html Msg
 renderTable tableModel =
     let
         pairs = List.map2 Tuple.pair tableModel.sideHeadings tableModel.rows
@@ -124,7 +139,7 @@ renderTable tableModel =
         renderedRows
     )
 
-myTableHeadersRow : List (String) -> Html msg
+myTableHeadersRow : List (String) -> Html Msg
 myTableHeadersRow headings  =
     tr [] (
             [ th [] [text  "///"] ]
@@ -132,7 +147,7 @@ myTableHeadersRow headings  =
             List.map (\s -> th [] [text s]) headings
     )
 
-myRow : String -> List (CellViewModel) ->  Html msg
+myRow : String -> List (CellViewModel) ->  Html Msg
 myRow heading cellViewModels =
         tr [id "myRow"] ( 
                 th [] [text heading]
@@ -140,9 +155,9 @@ myRow heading cellViewModels =
                   List.map renderCellViewModel cellViewModels
             )
 
-renderCellViewModel : CellViewModel -> Html msg
+renderCellViewModel : CellViewModel -> Html Msg
 renderCellViewModel cellViewModel =
-    td [class cellViewModel.color] [text cellViewModel.label]
+    td [class cellViewModel.color, onClick (CellClicked cellViewModel)] [text cellViewModel.label]
 
 
 tableNameLabel : String -> Html msg
