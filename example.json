@@ -1,0 +1,37 @@
+{
+    "name": "myname",
+    "topHeadings": ["sfbay","boston","portland","seattle","austin"],    
+    "sideHeadings": ["carpentry","masonry","welding"],    
+    "rows":
+        [
+            [
+                {
+                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
+                    "hits":1,
+                    "color":"blueCell",
+                    "label": "label"
+                },
+                {
+                    "url":"https://seattle.craigslist.org/d/jobs/search/jjj?query= Carpenter",
+                    "hits":1,
+                    "color":"blueCell",
+                    "label": "label"
+                }
+            ],
+            [
+                {
+                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
+                    "hits":1,
+                    "color":"blueCell",
+                    "label": "label"
+                },
+                {
+                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
+                    "hits":1,
+                    "color":"blueCell",
+                    "label": "label"
+                }
+            ]
+        ]
+        
+}
