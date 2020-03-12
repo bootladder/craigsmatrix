@@ -23,6 +23,12 @@ testJson =
                     "label": "label"
                 },
                 {
+                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Electrical",
+                    "hits":1,
+                    "color":"blueCell",
+                    "label": "diff"
+                },
+                {
                     "url":"https://seattle.craigslist.org/d/jobs/search/jjj?query= Carpenter",
                     "hits":1,
                     "color":"blueCell",

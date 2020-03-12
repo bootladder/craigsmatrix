@@ -50,49 +50,7 @@ type alias TableModel =
 testJson : String
 testJson =
     """
-    {
-    "name": "myname",
-    "topHeadings": ["sfbay","boston","portland","seattle","austin"],    
-    "sideHeadings": ["carpentry","masonry","welding"],    
-    "rows":
-        [
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Electrical",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "diff"
-                },
-                {
-                    "url":"https://seattle.craigslist.org/d/jobs/search/jjj?query= Carpenter",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ]
-        ]
-        
-}
+    %s
     """
 
 
@@ -256,3 +214,7 @@ cellViewModelDecoder =
         (Json.Decode.field "label" Json.Decode.string)
         (Json.Decode.field "url" Json.Decode.string)
         (Json.Decode.field "hits" Json.Decode.int)
+
+
+
+
