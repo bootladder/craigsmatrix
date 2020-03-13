@@ -17,6 +17,8 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/pkg/errors"
+
+	"github.com/mmcdole/gofeed"
 )
 
 var debug = false
@@ -35,6 +37,12 @@ type requestCraigslistPageResponse struct {
 }
 
 func main() {
+	fp := gofeed.NewParser()
+	feed, _ := fp.ParseURL("http://feeds.twit.tv/twit.xml")
+	for _, item := range feed.Items {
+		fmt.Print(item.Title)
+	}
+	fmt.Println(feed.Title)
 
 	router := httprouter.New()
 	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
