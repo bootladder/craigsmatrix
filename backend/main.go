@@ -17,8 +17,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/pkg/errors"
-
-	"github.com/mmcdole/gofeed"
 )
 
 var tableModel TableModel
@@ -28,6 +26,10 @@ var debug = false
 var err error
 
 type tableModelRequest struct {
+	TableID int `json:"tableId"`
+}
+
+type updateTableDataRequest struct {
 	TableID int `json:"tableId"`
 }
 
@@ -46,19 +48,13 @@ type requestCraigslistPageResponse struct {
 }
 
 func main() {
-	fp := gofeed.NewParser()
-	feed, _ := fp.ParseURL("http://feeds.twit.tv/twit.xml")
-	for _, item := range feed.Items {
-		fmt.Print(item.Title)
-	}
-	fmt.Println(feed.Title)
-
 	router := httprouter.New()
 	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
 
 	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
 	router.POST("/api/fieldedit", fieldEditHandler)
+	router.POST("/api/updatetabledata", updateTableDataHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
@@ -69,9 +65,7 @@ func main() {
 func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	req := parseTableModelRequest(r.Body)
 
-	var contents []byte
-
-	contents = tableModel.toJSONBytes(req.TableID)
+	contents := tableModel.toJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -92,12 +86,30 @@ func fieldEditHandler(w http.ResponseWriter, r *http.Request, p httprouter.Param
 	editTableModelField(req.TableID, req.FieldIndex, req.FieldValue, req.FieldType)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Durr"))
 }
 
 func parseFieldEditRequestBody(requestBody io.Reader) fieldEditRequest {
 	var req fieldEditRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+func updateTableDataHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseUpdateTableDataRequestBody(r.Body)
+	updateTableData(req.TableID)
+
+	contents := tableModel.toJSONBytes(req.TableID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+func parseUpdateTableDataRequestBody(requestBody io.Reader) updateTableDataRequest {
+	var req updateTableDataRequest
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 	return req

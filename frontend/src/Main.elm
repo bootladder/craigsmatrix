@@ -79,7 +79,7 @@ init _ =
         initialUrl
         initialTableModel
         "hello???"
-        "field input"
+        ""
         0
         TopField
     , (httpRequestTableModel 1)
@@ -99,6 +99,7 @@ type Msg
     | FieldEditorSubmit
     | TableTopFieldClicked String Int
     | TableSideFieldClicked String Int
+    | UpdateTableData
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -171,6 +172,9 @@ update msg model =
                        ,editingFieldIndex = fieldIndex
             }, Cmd.none)
 
+        UpdateTableData ->
+            ( model, httpUpdateTableData model.tableModel.id)
+
 
 
 
@@ -222,7 +226,7 @@ renderTable tableModel =
 renderTableHeadersRow : List (String) -> Html Msg
 renderTableHeadersRow headings  =
     tr [] (
-            [ th [] [text  "///"] ]
+            [ th [] [button [onClick UpdateTableData] [text "UPDATE"]] ]
             ++
             List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i)] [text heading]) headings
             ++
@@ -251,6 +255,11 @@ tableNameLabel name =
             , div [] [text name]
             , button [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
             , button [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
+            , button [ onClick <| SelectTableClicked 3 ] [ text "Table 3"]
+            , button [ onClick <| SelectTableClicked 4 ] [ text "Table 4"]
+            , button [ onClick <| SelectTableClicked 5 ] [ text "Table 5"]
+            , button [ onClick <| SelectTableClicked 6 ] [ text "Table 6"]
+            , button [ onClick <| SelectTableClicked 7 ] [ text "Table 7"]
             ]
 
 constantsLabel : Html msg
@@ -279,7 +288,10 @@ fieldEditor : String -> Html Msg
 fieldEditor editorValue =
         div [id "fieldEditor"] 
         [ text "Field Editor" 
-        , input [ onInput FieldEditorChanged, Html.Attributes.value editorValue ] []
+        , input [ onInput FieldEditorChanged
+                , Html.Attributes.value editorValue 
+                , placeholder "Click a row or column header"
+                ] []
         , button [ onClick FieldEditorSubmit ] [text "Submit"]
         ]
 
@@ -328,6 +340,19 @@ httpSubmitFieldEdit fieldValue fieldType tableId fieldIndex =
                     , ( "fieldValue", Json.Encode.string fieldValue)
                     ]
         , url = "http://localhost:8080/api/fieldedit"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+
+httpUpdateTableData : Int -> Cmd Msg
+httpUpdateTableData tableId =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int tableId )
+                    ]
+        , url = "http://localhost:8080/api/updatetabledata"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 

@@ -1,72 +1,127 @@
 {
-    "name": "table2 name",
-    "id": 2,
-    "topHeadings": ["sfbay","boston","sacramento","seattle","austin"],    
-    "sideHeadings": ["java","golang","python","scala"],    
-    "rows":
-        [
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Electrical",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "diff"
-                },
-                {
-                    "url":"https://seattle.craigslist.org/d/jobs/search/jjj?query=Carpenter",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ]
-        ]
-        
+  "name": "Name of Table 2",
+  "id": 2,
+  "topHeadings": [
+    "newyork",
+    "longisland",
+    "boston",
+    "philadelphia",
+    "baltimore"
+  ],
+  "sideHeadings": [
+    "carpentry",
+    "masonry",
+    "welding",
+    "firmware"
+  ],
+  "rows": [
+    [
+      {
+        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
+        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=carpentry",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
+        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=carpentry",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
+        "pageUrl": "https://boston.craigslist.org/search/jjj?query=carpentry",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
+        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=carpentry",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
+        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=carpentry",
+        "hits": 25
+      }
+    ],
+    [
+      {
+        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=masonry",
+        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=masonry",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=masonry",
+        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=masonry",
+        "hits": 21
+      },
+      {
+        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=masonry",
+        "pageUrl": "https://boston.craigslist.org/search/jjj?query=masonry",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=masonry",
+        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=masonry",
+        "hits": 23
+      },
+      {
+        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=masonry",
+        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=masonry",
+        "hits": 17
+      }
+    ],
+    [
+      {
+        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=welding",
+        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=welding",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=welding",
+        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=welding",
+        "hits": 22
+      },
+      {
+        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=welding",
+        "pageUrl": "https://boston.craigslist.org/search/jjj?query=welding",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=welding",
+        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=welding",
+        "hits": 23
+      },
+      {
+        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=welding",
+        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=welding",
+        "hits": 22
+      }
+    ],
+    [
+      {
+        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=firmware",
+        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=firmware",
+        "hits": 1
+      },
+      {
+        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=firmware",
+        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=firmware",
+        "hits": 0
+      },
+      {
+        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=firmware",
+        "pageUrl": "https://boston.craigslist.org/search/jjj?query=firmware",
+        "hits": 2
+      },
+      {
+        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=firmware",
+        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=firmware",
+        "hits": 0
+      },
+      {
+        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=firmware",
+        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=firmware",
+        "hits": 0
+      }
+    ]
+  ]
 }

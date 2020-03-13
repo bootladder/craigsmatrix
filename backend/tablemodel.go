@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/mmcdole/gofeed"
 )
 
-// TableModel wtf
+// TableModel is the model that is sent to the front end
 type TableModel struct {
 	Name         string            `json:"name"`
 	ID           int               `json:"id"`
@@ -16,7 +18,7 @@ type TableModel struct {
 	Rows         [][]CellViewModel `json:"rows"`
 }
 
-//CellViewModel wtf
+//CellViewModel this isn't a viewmodel, it's a model.  Change the name
 type CellViewModel struct {
 	FeedURL string `json:"feedUrl"`
 	PageURL string `json:"pageUrl"`
@@ -24,24 +26,22 @@ type CellViewModel struct {
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
-	fileReader, err := os.Open("../data/table1.json")
+	//don't allow out of bounds tableIDs
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	fileReader, err := os.Open(filename)
 	fatal(err)
+
 	var tableModel TableModel
 	err = json.NewDecoder(fileReader).Decode(&tableModel)
 
 	if fieldType == "top" {
-		fmt.Print("The field in question is " + tableModel.TopHeadings[fieldIndex])
-		fmt.Print("Changing it to " + fieldValue)
 		tableModel.TopHeadings[fieldIndex] = fieldValue
 	} else if fieldType == "side" {
-		fmt.Print("The field in question is " + tableModel.SideHeadings[fieldIndex])
-		fmt.Print("Changing it to " + fieldValue)
 		tableModel.SideHeadings[fieldIndex] = fieldValue
 	} else {
-		fmt.Print("NO FIELD TYTPE SUPPLIED")
+		fmt.Print("NO FIELD TYPE SUPPLIED. DOING NOTHING")
 	}
 
-	fmt.Print("REGENERATE URLS")
 	tableModel.Rows = make([][]CellViewModel, len(tableModel.SideHeadings))
 	for i := range tableModel.Rows {
 		tableModel.Rows[i] = make([]CellViewModel, len(tableModel.TopHeadings))
@@ -49,12 +49,12 @@ func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) 
 		for j := range tableModel.Rows[i] {
 			tableModel.Rows[i][j].FeedURL = makeCraigslistFeedURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
 			tableModel.Rows[i][j].PageURL = makeCraigslistPageURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
-			tableModel.Rows[i][j].Hits = 7
+			tableModel.Rows[i][j].Hits = -1
 		}
 	}
 
 	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
-	ioutil.WriteFile("../data/table1.json", jsonBytes, 666)
+	ioutil.WriteFile(filename, jsonBytes, 666)
 }
 
 func makeCraigslistFeedURL(side, top string) string {
@@ -66,17 +66,43 @@ func makeCraigslistPageURL(side, top string) string {
 }
 
 func (t *TableModel) toJSONBytes(tableID int) []byte {
-	var contents []byte
-	if 1 == tableID {
-		fmt.Print("\n\nWTF 1")
-		contents, err = ioutil.ReadFile("../data/table1.json")
-		fatal(err)
-	} else if 2 == tableID {
-		fmt.Print("\n\nWTF 2")
-		contents, err = ioutil.ReadFile("../data/table2.json")
-		fatal(err)
-	} else {
-		contents = []byte("Invalid table ID, brah")
-	}
+	//don't allow out of bounds tableIDs
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+
+	contents, err := ioutil.ReadFile(filename)
+	fatal(err)
 	return contents
+}
+
+func updateTableData(tableID int) {
+
+	fp := gofeed.NewParser()
+
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	fileReader, err := os.Open(filename)
+	fatal(err)
+
+	var tableModel TableModel
+	err = json.NewDecoder(fileReader).Decode(&tableModel)
+
+	for i := range tableModel.Rows {
+		for j := range tableModel.Rows[i] {
+			feedURL := tableModel.Rows[i][j].FeedURL
+
+			feed, _ := fp.ParseURL(feedURL)
+			for _, item := range feed.Items {
+				fmt.Print(item.Title)
+			}
+			fmt.Println(feed.Title)
+
+			fmt.Printf("There are %d items\n", len(feed.Items))
+
+			tableModel.Rows[i][j].Hits = len(feed.Items)
+		}
+	}
+
+	fmt.Print("\n\nHURR DURR\n\n")
+
+	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
+	ioutil.WriteFile(filename, jsonBytes, 666)
 }
