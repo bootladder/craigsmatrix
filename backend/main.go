@@ -23,10 +23,10 @@ var debug = false
 
 var err error
 
-type craigslistPostRequest struct {
+type requestCraigslistPageRequest struct {
 	SearchURL string `json:"searchURL"`
 }
-type craigslistPostResponse struct {
+type requestCraigslistPageResponse struct {
 	ResponseHTML string `json:"response"`
 }
 
@@ -35,7 +35,7 @@ func main() {
 	router := httprouter.New()
 	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
 
-	router.POST("/api/", createPostHandler(""))
+	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
@@ -53,19 +53,24 @@ func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Para
 	w.Write(contents)
 }
 
-func postNoteHandler(w http.ResponseWriter, r *http.Request) {
+func requestCraigslistPageHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	fmt.Println("Hello?")
-	req := parsePostRequestBody(r.Body)
+	req := parseRequestCraigslistPageRequestBody(r.Body)
 
-	var resp craigslistPostResponse
+	var resp requestCraigslistPageResponse
 	resp.ResponseHTML = fetchCraigslistQuery(req.SearchURL)
 
-	writePostResponse(w, resp)
+	jsonOut, err := json.Marshal(resp)
+	fatal(err)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonOut)
 }
 
-func parsePostRequestBody(requestBody io.Reader) craigslistPostRequest {
-	var req craigslistPostRequest
+func parseRequestCraigslistPageRequestBody(requestBody io.Reader) requestCraigslistPageRequest {
+	var req requestCraigslistPageRequest
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 
@@ -126,16 +131,6 @@ func renderNode(n *html.Node) string {
 	return buf.String()
 }
 
-func writePostResponse(w http.ResponseWriter,
-	resp craigslistPostResponse) {
-	jsonOut, err := json.Marshal(resp)
-	fatal(err)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(jsonOut)
-}
-
 func makeRequest(url string) (string, error) {
 
 	log.Print("makeRequest: sleep ... ")
@@ -176,10 +171,4 @@ func fatal(err error, msgs ...string) {
 
 func printf(s string, a ...interface{}) {
 	fmt.Printf(s, a...)
-}
-
-func createPostHandler(msg string) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		postNoteHandler(w, r)
-	}
 }

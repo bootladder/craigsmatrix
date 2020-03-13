@@ -68,7 +68,7 @@ init _ =
         initialUrl
         initialTableModel
         "hello???"
-    , (httpRequestTableModel)
+    , (httpRequestTableModel 0)
     )
 
 
@@ -233,13 +233,13 @@ httpRequestCraigslistSearchPage url =
         , expect = Http.expectJson (\jsonResult -> ReceivedCraigslistPage jsonResult) craigslistPageDecoder
         }
 
-httpRequestTableModel : Cmd Msg
-httpRequestTableModel =
+httpRequestTableModel : Int -> Cmd Msg
+httpRequestTableModel id =
     Http.post
         { body =
             Http.jsonBody <|
                 Json.Encode.object
-                    [ ( "tableId", Json.Encode.int 0 )
+                    [ ( "tableId", Json.Encode.int id )
                     ]
         , url = "http://localhost:8080/api/table"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
