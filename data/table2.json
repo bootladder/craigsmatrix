@@ -1,7 +1,7 @@
 {
-    "name": "myname",
+    "name": "table2 name",
     "topHeadings": ["sfbay","boston","sacramento","seattle","austin"],    
-    "sideHeadings": ["carpentry","masonry","welding","asdf lkj woerewggdsj sdfds"],    
+    "sideHeadings": ["java","golang","python","scala"],    
     "rows":
         [
             [

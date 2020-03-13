@@ -23,6 +23,10 @@ var debug = false
 
 var err error
 
+type tableModelRequest struct {
+	TableId int `json:"tableId"`
+}
+
 type requestCraigslistPageRequest struct {
 	SearchURL string `json:"searchURL"`
 }
@@ -45,17 +49,34 @@ func main() {
 }
 
 func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	contents, err := ioutil.ReadFile("../data/example.json")
-	fatal(err)
+	req := parseTableModelRequest(r.Body)
+
+	var contents []byte
+	if 0 == req.TableId {
+		fmt.Print("\n\nWTF 0")
+		contents, err = ioutil.ReadFile("../data/table1.json")
+		fatal(err)
+	}
+	if 1 == req.TableId {
+		fmt.Print("\n\nWTF 1")
+		contents, err = ioutil.ReadFile("../data/table2.json")
+		fatal(err)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(contents)
 }
 
+func parseTableModelRequest(requestBody io.Reader) tableModelRequest {
+	var req tableModelRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
 func requestCraigslistPageHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
-	fmt.Println("Hello?")
 	req := parseRequestCraigslistPageRequestBody(r.Body)
 
 	var resp requestCraigslistPageResponse
@@ -86,7 +107,6 @@ func fetchCraigslistQuery(url string) string {
 			` Wow cool ` + url + ` </li></ul></body></html>`
 	}
 	rawHTML, err := makeRequest(url)
-	fmt.Print(rawHTML)
 	if err != nil {
 		return `<html><body><ul><li class="result-row" data-pid="6744258112">` +
 			` ERROR: ` + err.Error() + ` : ` + url + ` </li></ul></body></html>`

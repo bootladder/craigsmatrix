@@ -1,6 +1,6 @@
 {
-    "name": "myname",
-    "topHeadings": ["sfbay","boston","sacramento","seattle","austin"],    
+    "name": "table1 name",
+    "topHeadings": ["tucson","phoenix","austin","houston","dallas"],    
     "sideHeadings": ["carpentry","masonry","welding","asdf lkj woerewggdsj sdfds"],    
     "rows":
         [

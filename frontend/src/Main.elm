@@ -68,7 +68,7 @@ init _ =
         initialUrl
         initialTableModel
         "hello???"
-    , (httpRequestTableModel 0)
+    , (httpRequestTableModel 1)
     )
 
 
