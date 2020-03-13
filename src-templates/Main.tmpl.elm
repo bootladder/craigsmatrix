@@ -5,7 +5,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
+import Http
 import Json.Decode exposing (..)
+import Json.Encode 
 
 
 -- MAIN
@@ -72,7 +74,7 @@ init _ =
         "dummy debug"
         "https://google.com"
         myTableModel
-    , Cmd.none
+    , (httpRequestColumn "https://portland.craigslist.org/search/jjj?format=rss&query=firmware")
     )
 
 
@@ -81,8 +83,7 @@ init _ =
 
 
 type Msg
-    = FormInput String
-    | AddColumnButtonClicked
+    = ReceivedCraigslistPage (Result Http.Error String)
     | CellClicked CellViewModel
 
 
@@ -95,7 +96,7 @@ update msg model =
                 }
             , Cmd.none
             )
-        _ ->
+        ReceivedCraigslistPage res ->
             ( model
             , Cmd.none
             )
@@ -192,7 +193,25 @@ topLabel =
         ]
 
 
+-- HTML
+
+httpRequestColumn : String -> Cmd Msg
+httpRequestColumn url =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "searchURL", Json.Encode.string url )
+                    ]
+        , url = "http://localhost:8080/api/"
+        , expect = Http.expectJson (\jsonResult -> ReceivedCraigslistPage jsonResult) craigslistPageDecoder
+        }
+
 -- DECODER
+
+craigslistPageDecoder : Decoder String
+craigslistPageDecoder =
+    field "response" Json.Decode.string
 
 backendResponseDecoder : Decoder TableModel
 backendResponseDecoder = 
@@ -218,3 +237,10 @@ cellViewModelDecoder =
 
 
 
+
+
+postBody : String -> Html msg
+postBody html =
+    Html.node "rendered-html"
+        [ Html.Attributes.property "content" (Json.Encode.string html) ]
+        []
