@@ -9,6 +9,8 @@ import Http
 import Json.Decode exposing (..)
 import Json.Encode 
 
+import String
+
 
 -- MAIN
 
@@ -45,9 +47,8 @@ fieldTypeToString ft = case ft of
 
 
 type alias CellViewModel =
-    { color : String
-    , label : String
-    , url : String
+    {
+      url : String
     , hits : Int
     }
 
@@ -239,7 +240,7 @@ renderRow index heading cellViewModels =
 
 renderCellViewModel : CellViewModel -> Html Msg
 renderCellViewModel cellViewModel =
-    td [class cellViewModel.color, onClick (CellClicked cellViewModel)] [text cellViewModel.label]
+    td [class "blueCell", onClick (CellClicked cellViewModel)] [text <| String.fromInt cellViewModel.hits]
 
 
 tableNameLabel : String -> Html Msg
@@ -352,8 +353,6 @@ rowsDecoder =
 
 cellViewModelDecoder : Decoder CellViewModel
 cellViewModelDecoder =
-    Json.Decode.map4 CellViewModel
-        (Json.Decode.field "color" Json.Decode.string)
-        (Json.Decode.field "label" Json.Decode.string)
+    Json.Decode.map2 CellViewModel
         (Json.Decode.field "url" Json.Decode.string)
         (Json.Decode.field "hits" Json.Decode.int)

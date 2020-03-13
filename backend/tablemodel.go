@@ -18,10 +18,8 @@ type TableModel struct {
 
 //CellViewModel wtf
 type CellViewModel struct {
-	Color string `json:"color"`
-	Label string `json:"label"`
-	URL   string `json:"url"`
-	Hits  int    `json:"hits"`
+	URL  string `json:"url"`
+	Hits int    `json:"hits"`
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
