@@ -31,9 +31,12 @@ type alias Model =
     , currentUrl : String
     , tableModel : TableModel
     , craigslistPageHtmlString : String
-    , fieldEditorInput : String
-    , editingFieldId : String
+    , editingFieldInputValue : String
+    , editingFieldIndex : Int
+    , editingFieldType : FieldType
     }
+
+type FieldType = TopField | SideField
 
 
 type alias CellViewModel =
@@ -70,7 +73,8 @@ init _ =
         initialTableModel
         "hello???"
         "field input"
-        "field id"
+        0
+        TopField
     , (httpRequestTableModel 1)
     )
 
@@ -86,7 +90,8 @@ type Msg
     | SelectTableClicked Int
     | FieldEditorChanged String
     | FieldEditorSubmit
-    | TableFieldClicked String
+    | TableTopFieldClicked String Int
+    | TableSideFieldClicked String Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -138,13 +143,25 @@ update msg model =
             )
 
         FieldEditorChanged input ->
-            ( {model|fieldEditorInput = input}, Cmd.none)
+            ( {model| editingFieldInputValue = input}, Cmd.none)
 
         FieldEditorSubmit ->
-            ( model, httpSubmitFieldEdit model.fieldEditorInput model.tableModel.id model.editingFieldId)
+            ( model, 
+                httpSubmitFieldEdit model.editingFieldInputValue 
+                                    model.tableModel.id 
+                                    model.editingFieldIndex)
 
-        TableFieldClicked fieldName ->
-            ( {model | fieldEditorInput = fieldName}, Cmd.none)
+        TableTopFieldClicked fieldName fieldIndex ->
+            ( {model | editingFieldInputValue = fieldName
+                       ,editingFieldType = TopField
+                       ,editingFieldIndex = fieldIndex
+            }, Cmd.none)
+
+        TableSideFieldClicked fieldName fieldIndex ->
+            ( {model | editingFieldInputValue = fieldName
+                       ,editingFieldType = SideField
+                       ,editingFieldIndex = fieldIndex
+            }, Cmd.none)
 
 
 
@@ -169,7 +186,7 @@ view model =
     , topLabel
     , sideLabel
     , constantsLabel
-    , fieldEditor model.fieldEditorInput
+    , fieldEditor model.editingFieldInputValue
     , div [id "myTable"] [renderTable model.tableModel]
     , div [id "urlView"] [text model.currentUrl]
     , craigslistSearchPage  model.craigslistPageHtmlString
@@ -180,8 +197,8 @@ renderTable tableModel =
     let
         pairs = List.map2 Tuple.pair tableModel.sideHeadings tableModel.rows
 
-        renderedRows = List.map 
-                        (\(heading, cells) -> renderRow heading cells)
+        renderedRows = List.indexedMap 
+                        (\i (heading, cells) -> renderRow i heading cells)
                         pairs
     in
     table [] (
@@ -199,17 +216,17 @@ renderTableHeadersRow headings  =
     tr [] (
             [ th [] [text  "///"] ]
             ++
-            List.map (\s -> th [ onClick (TableFieldClicked s)] [text s]) headings
+            List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i)] [text heading]) headings
             ++
             [ th [] [button [] [text "add"]]]
             ++
             [ th [] [button [] [text "del"]]]
     )
 
-renderRow : String -> List (CellViewModel) ->  Html Msg
-renderRow heading cellViewModels =
+renderRow : Int -> String -> List (CellViewModel) ->  Html Msg
+renderRow index heading cellViewModels =
         tr [id "myRow"] ( 
-                th [onClick (TableFieldClicked heading)] [text heading]
+                th [onClick (TableSideFieldClicked heading index)] [text heading]
                 ::
                   List.map renderCellViewModel cellViewModels
             )
@@ -291,14 +308,14 @@ httpRequestTableModel id =
         }
 
 
-httpSubmitFieldEdit : String -> Int -> String -> Cmd Msg
-httpSubmitFieldEdit fieldValue tableId fieldId =
+httpSubmitFieldEdit : String -> Int -> Int -> Cmd Msg
+httpSubmitFieldEdit fieldValue tableId fieldIndex =
     Http.post
         { body =
             Http.jsonBody <|
                 Json.Encode.object
                     [ ( "tableId", Json.Encode.int tableId )
-                    , ( "fieldId", Json.Encode.string fieldId)
+                    , ( "fieldId", Json.Encode.int fieldIndex)
                     , ( "fieldValue", Json.Encode.string fieldValue)
                     ]
         , url = "http://localhost:8080/api/fieldedit"
