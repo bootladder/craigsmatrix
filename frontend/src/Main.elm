@@ -48,7 +48,8 @@ fieldTypeToString ft = case ft of
 
 type alias CellViewModel =
     {
-      url : String
+      pageUrl : String
+    , feedUrl : String
     , hits : Int
     }
 
@@ -105,9 +106,9 @@ update msg model =
     case msg of
         CellClicked cellViewModel -> 
             ( {model 
-                | currentUrl = cellViewModel.url
+                | currentUrl = cellViewModel.pageUrl
                 }
-            , httpRequestCraigslistSearchPage cellViewModel.url
+            , httpRequestCraigslistSearchPage cellViewModel.pageUrl
             )
 
         ReceivedCraigslistPage result ->
@@ -353,6 +354,7 @@ rowsDecoder =
 
 cellViewModelDecoder : Decoder CellViewModel
 cellViewModelDecoder =
-    Json.Decode.map2 CellViewModel
-        (Json.Decode.field "url" Json.Decode.string)
+    Json.Decode.map3 CellViewModel
+        (Json.Decode.field "pageUrl" Json.Decode.string)
+        (Json.Decode.field "feedUrl" Json.Decode.string)
         (Json.Decode.field "hits" Json.Decode.int)

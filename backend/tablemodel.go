@@ -18,8 +18,9 @@ type TableModel struct {
 
 //CellViewModel wtf
 type CellViewModel struct {
-	URL  string `json:"url"`
-	Hits int    `json:"hits"`
+	FeedURL string `json:"feedUrl"`
+	PageURL string `json:"pageUrl"`
+	Hits    int    `json:"hits"`
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
@@ -40,8 +41,28 @@ func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) 
 		fmt.Print("NO FIELD TYTPE SUPPLIED")
 	}
 
+	fmt.Print("REGENERATE URLS")
+	tableModel.Rows = make([][]CellViewModel, len(tableModel.SideHeadings))
+	for i := range tableModel.Rows {
+		tableModel.Rows[i] = make([]CellViewModel, len(tableModel.TopHeadings))
+
+		for j := range tableModel.Rows[i] {
+			tableModel.Rows[i][j].FeedURL = makeCraigslistFeedURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
+			tableModel.Rows[i][j].PageURL = makeCraigslistPageURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
+			tableModel.Rows[i][j].Hits = 7
+		}
+	}
+
 	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
 	ioutil.WriteFile("../data/table1.json", jsonBytes, 666)
+}
+
+func makeCraigslistFeedURL(side, top string) string {
+	return "https://" + top + ".craigslist.org/search/jjj?format=rss&query=" + side
+}
+
+func makeCraigslistPageURL(side, top string) string {
+	return "https://" + top + ".craigslist.org/search/jjj?query=" + side
 }
 
 func (t *TableModel) toJSONBytes(tableID int) []byte {
