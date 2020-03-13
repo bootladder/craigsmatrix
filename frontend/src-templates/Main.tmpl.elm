@@ -51,8 +51,8 @@ type alias TableModel =
 
 
 
-myTableModel : TableModel
-myTableModel = 
+initialTableModel : TableModel
+initialTableModel = 
         TableModel "dummy uninitted" [] [] [[]] 
 
 -- INIT
@@ -66,7 +66,7 @@ init _ =
         0
         "dummy debug"
         initialUrl
-        myTableModel
+        initialTableModel
         "hello???"
     , (httpRequestTableModel)
     )
@@ -89,7 +89,7 @@ update msg model =
             ( {model 
                 | currentUrl = cellViewModel.url
                 }
-            , Cmd.none
+            , httpRequestCraigslistSearchPage cellViewModel.url
             )
 
         ReceivedCraigslistPage result ->
@@ -139,11 +139,11 @@ view : Model -> Html Msg
 view model =
     div [id "container"] 
     [ div [id "nothing"] [ text "nothing"]
-    , tableNameLabel myTableModel.name
+    , tableNameLabel model.tableModel.name
     , topLabel
     , sideLabel
     , constantsLabel
-    , div [id "myTable"] [renderTable myTableModel]
+    , div [id "myTable"] [renderTable model.tableModel]
     , div [id "urlView"] [text model.currentUrl]
     , craigslistSearchPage  model.craigslistPageHtmlString
     ]

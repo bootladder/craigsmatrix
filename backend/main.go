@@ -45,9 +45,12 @@ func main() {
 }
 
 func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	contents, err := ioutil.ReadFile("../data/example.json")
+	fatal(err)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("{}"))
+	w.Write(contents)
 }
 
 func postNoteHandler(w http.ResponseWriter, r *http.Request) {
