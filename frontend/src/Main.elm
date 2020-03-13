@@ -30,7 +30,8 @@ type alias Model =
     { urlSetId : Int
     , debugBreadcrumb : String
     , currentUrl : String
-    , myTableModel : TableModel
+    , tableModel : TableModel
+    , craigslistPageHtmlString : String
     }
 
 
@@ -49,64 +50,14 @@ type alias TableModel =
     }
 
 
-testJson : String
-testJson =
-    """
-    {
-    "name": "myname",
-    "topHeadings": ["sfbay","boston","portland","seattle","austin"],    
-    "sideHeadings": ["carpentry","masonry","welding"],    
-    "rows":
-        [
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Electrical",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "diff"
-                },
-                {
-                    "url":"https://seattle.craigslist.org/d/jobs/search/jjj?query= Carpenter",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query= Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ]
-        ]
-        
-}
-    """
-
 
 myTableModel : TableModel
 myTableModel = 
-    case (Json.Decode.decodeString
-                backendResponseDecoder testJson) of
-        Err msg -> TableModel (Json.Decode.errorToString msg) [] [] [[]] 
-        Ok a -> a
+        TableModel "dummy uninitted" [] [] [[]] 
 
 -- INIT
 
+initialUrl = "https://portland.craigslist.org/search/jjj?query=firmware"
 
 init : () -> ( Model, Cmd Msg )
 init _ =
@@ -114,9 +65,10 @@ init _ =
     ( Model
         0
         "dummy debug"
-        "https://google.com"
+        initialUrl
         myTableModel
-    , (httpRequestColumn "https://portland.craigslist.org/search/jjj?format=rss&query=firmware")
+        "hello???"
+    , (httpRequestTableModel)
     )
 
 
@@ -126,6 +78,7 @@ init _ =
 
 type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
+    | ReceivedTableModel  (Result Http.Error TableModel)
     | CellClicked CellViewModel
 
 
@@ -138,10 +91,35 @@ update msg model =
                 }
             , Cmd.none
             )
-        ReceivedCraigslistPage res ->
-            ( model
-            , Cmd.none
-            )
+
+        ReceivedCraigslistPage result ->
+            case result of
+                Ok fullText ->
+                    ( {model 
+                        | craigslistPageHtmlString = fullText}
+                    , Cmd.none
+                    )
+
+                Err e ->
+                    ( {model 
+                        | craigslistPageHtmlString = "FAIL"}
+                    , Cmd.none
+                    )
+
+        ReceivedTableModel result ->
+            case result of
+                Ok resultTableModel ->
+                    ( {model 
+                        | tableModel = resultTableModel}
+                    , Cmd.none
+                    )
+
+                Err e ->
+                    ( {model 
+                        | craigslistPageHtmlString = "FAIL"}
+                    , Cmd.none
+                    )
+
 
 
 
@@ -167,6 +145,7 @@ view model =
     , constantsLabel
     , div [id "myTable"] [renderTable myTableModel]
     , div [id "urlView"] [text model.currentUrl]
+    , craigslistSearchPage  model.craigslistPageHtmlString
     ]
 
 renderTable : TableModel -> Html Msg
@@ -234,11 +213,16 @@ topLabel =
         , div [] [text "cities"]
         ]
 
+craigslistSearchPage : String -> Html msg
+craigslistSearchPage html =
+    Html.node "rendered-html"
+        [ Html.Attributes.property "content" (Json.Encode.string html) ]
+        []
 
--- HTML
+-- HTTP
 
-httpRequestColumn : String -> Cmd Msg
-httpRequestColumn url =
+httpRequestCraigslistSearchPage : String -> Cmd Msg
+httpRequestCraigslistSearchPage url =
     Http.post
         { body =
             Http.jsonBody <|
@@ -249,14 +233,27 @@ httpRequestColumn url =
         , expect = Http.expectJson (\jsonResult -> ReceivedCraigslistPage jsonResult) craigslistPageDecoder
         }
 
+httpRequestTableModel : Cmd Msg
+httpRequestTableModel =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int 0 )
+                    ]
+        , url = "http://localhost:8080/api/table"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+
 -- DECODER
 
 craigslistPageDecoder : Decoder String
 craigslistPageDecoder =
     field "response" Json.Decode.string
 
-backendResponseDecoder : Decoder TableModel
-backendResponseDecoder = 
+tableModelDecoder : Decoder TableModel
+tableModelDecoder = 
     Json.Decode.map4 TableModel
         (Json.Decode.field "name" Json.Decode.string)
         (Json.Decode.field "topHeadings" (Json.Decode.list string))
@@ -275,14 +272,3 @@ cellViewModelDecoder =
         (Json.Decode.field "label" Json.Decode.string)
         (Json.Decode.field "url" Json.Decode.string)
         (Json.Decode.field "hits" Json.Decode.int)
-
-
-
-
-
-
-postBody : String -> Html msg
-postBody html =
-    Html.node "rendered-html"
-        [ Html.Attributes.property "content" (Json.Encode.string html) ]
-        []

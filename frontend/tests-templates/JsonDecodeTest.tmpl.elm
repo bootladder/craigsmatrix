@@ -20,7 +20,7 @@ suite =
                 let
                     decodedOutput =
                         Json.Decode.decodeString
-                            backendResponseDecoder testJson
+                            tableModelDecoder testJson
                     result = case decodedOutput of
                         Err msg -> Main.TableModel (Json.Decode.errorToString msg) [] [] [[]] 
                         Ok a -> a

@@ -33,15 +33,21 @@ type craigslistPostResponse struct {
 func main() {
 
 	router := httprouter.New()
-	router.ServeFiles("/static/*filepath", http.Dir("public"))
-	router.ServeFiles("/images/*filepath", http.Dir("public/images"))
+	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
 
 	router.POST("/api/", createPostHandler(""))
+	router.POST("/api/table", tableModelHandler)
 
-	//browser.OpenURL("http://localhost:8080/static/index.html")
+	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
 	fmt.Println("serving on 8080")
 	http.ListenAndServe(":8080", router)
+}
+
+func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("{}"))
 }
 
 func postNoteHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,6 +78,7 @@ func fetchCraigslistQuery(url string) string {
 			` Wow cool ` + url + ` </li></ul></body></html>`
 	}
 	rawHTML, err := makeRequest(url)
+	fmt.Print(rawHTML)
 	if err != nil {
 		return `<html><body><ul><li class="result-row" data-pid="6744258112">` +
 			` ERROR: ` + err.Error() + ` : ` + url + ` </li></ul></body></html>`

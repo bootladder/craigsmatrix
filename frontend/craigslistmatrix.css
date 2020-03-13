@@ -1,3 +1,9 @@
+#container {
+    margin: 5px;
+    padding: 5px;
+    background-color: gray;
+}
+
 #myTable {
     background-color: red;
 }
@@ -16,12 +22,6 @@
 #urlView {
     background-color: pink;
 }
-#container {
-    margin: 5px;
-    padding: 5px;
-    background-color: black;
-}
-
 .blueCell {
     background-color: blue;
 }
