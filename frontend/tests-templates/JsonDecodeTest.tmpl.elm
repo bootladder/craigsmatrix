@@ -22,7 +22,7 @@ suite =
                         Json.Decode.decodeString
                             tableModelDecoder testJson
                     result = case decodedOutput of
-                        Err msg -> Main.TableModel (Json.Decode.errorToString msg) [] [] [[]] 
+                        Err msg -> Main.TableModel (Json.Decode.errorToString msg) 1 [] [] [[]] 
                         Ok a -> a
                 in
                     Expect.equal result.name "myname"

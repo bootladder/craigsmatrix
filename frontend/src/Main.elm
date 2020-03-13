@@ -27,11 +27,12 @@ main =
 
 
 type alias Model =
-    { urlSetId : Int
-    , debugBreadcrumb : String
+    { debugBreadcrumb : String
     , currentUrl : String
     , tableModel : TableModel
     , craigslistPageHtmlString : String
+    , fieldEditorInput : String
+    , editingFieldId : String
     }
 
 
@@ -44,6 +45,7 @@ type alias CellViewModel =
 
 type alias TableModel =
     { name : String
+    , id : Int
     , topHeadings : List (String)
     , sideHeadings : List (String)
     , rows : List (List (CellViewModel))
@@ -53,7 +55,7 @@ type alias TableModel =
 
 initialTableModel : TableModel
 initialTableModel = 
-        TableModel "dummy uninitted" [] [] [[]] 
+        TableModel "dummy uninitted" 1 [] [] [[]] 
 
 -- INIT
 
@@ -63,11 +65,12 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     -- The initial model comes from a Request, now it is hard coded
     ( Model
-        0
         "dummy debug"
         initialUrl
         initialTableModel
         "hello???"
+        "field input"
+        "field id"
     , (httpRequestTableModel 1)
     )
 
@@ -81,6 +84,9 @@ type Msg
     | ReceivedTableModel  (Result Http.Error TableModel)
     | CellClicked CellViewModel
     | SelectTableClicked Int
+    | FieldEditorChanged String
+    | FieldEditorSubmit
+    | TableFieldClicked String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -115,9 +121,14 @@ update msg model =
                     , Cmd.none
                     )
 
-                Err e ->
+                Err (Http.BadBody s) ->
                     ( {model 
-                        | craigslistPageHtmlString = "FAIL"}
+                        | craigslistPageHtmlString = s}
+                    , Cmd.none
+                    )
+                Err _ ->
+                    ( {model 
+                        | craigslistPageHtmlString = "SDFSD"}
                     , Cmd.none
                     )
 
@@ -125,6 +136,15 @@ update msg model =
             ( model 
             , httpRequestTableModel tableId
             )
+
+        FieldEditorChanged input ->
+            ( {model|fieldEditorInput = input}, Cmd.none)
+
+        FieldEditorSubmit ->
+            ( model, httpSubmitFieldEdit model.fieldEditorInput model.tableModel.id model.editingFieldId)
+
+        TableFieldClicked fieldName ->
+            ( {model | fieldEditorInput = fieldName}, Cmd.none)
 
 
 
@@ -144,11 +164,12 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div [id "container"] 
-    [ div [id "nothing"] [ text "nothing"]
+    [ div [id "pageHeader"] [ text "page header"]
     , tableNameLabel model.tableModel.name
     , topLabel
     , sideLabel
     , constantsLabel
+    , fieldEditor model.fieldEditorInput
     , div [id "myTable"] [renderTable model.tableModel]
     , div [id "urlView"] [text model.currentUrl]
     , craigslistSearchPage  model.craigslistPageHtmlString
@@ -167,6 +188,10 @@ renderTable tableModel =
         [renderTableHeadersRow tableModel.topHeadings]
         ++
         renderedRows
+        ++
+        [tr [id "myRow"] [button [] [text "add"]]]
+        ++
+        [tr [id "myRow"] [button [] [text "del"]]]
     )
 
 renderTableHeadersRow : List (String) -> Html Msg
@@ -174,13 +199,17 @@ renderTableHeadersRow headings  =
     tr [] (
             [ th [] [text  "///"] ]
             ++
-            List.map (\s -> th [] [text s]) headings
+            List.map (\s -> th [ onClick (TableFieldClicked s)] [text s]) headings
+            ++
+            [ th [] [button [] [text "add"]]]
+            ++
+            [ th [] [button [] [text "del"]]]
     )
 
 renderRow : String -> List (CellViewModel) ->  Html Msg
 renderRow heading cellViewModels =
         tr [id "myRow"] ( 
-                th [] [text heading]
+                th [onClick (TableFieldClicked heading)] [text heading]
                 ::
                   List.map renderCellViewModel cellViewModels
             )
@@ -190,11 +219,13 @@ renderCellViewModel cellViewModel =
     td [class cellViewModel.color, onClick (CellClicked cellViewModel)] [text cellViewModel.label]
 
 
-tableNameLabel : String -> Html msg
+tableNameLabel : String -> Html Msg
 tableNameLabel name =
         div [id "tableNameLabel"]
             [ text "table name label"
             , div [] [text name]
+            , button [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
+            , button [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
             ]
 
 constantsLabel : Html msg
@@ -217,8 +248,14 @@ topLabel =
         div [id "topLabel"] 
         [ text "top label" 
         , div [] [text "cities"]
-        , button [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
-        , button [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
+        ]
+
+fieldEditor : String -> Html Msg
+fieldEditor editorValue =
+        div [id "fieldEditor"] 
+        [ text "Field Editor" 
+        , input [ onInput FieldEditorChanged, Html.Attributes.value editorValue ] []
+        , button [ onClick FieldEditorSubmit ] [text "Submit"]
         ]
 
 craigslistSearchPage : String -> Html msg
@@ -254,6 +291,21 @@ httpRequestTableModel id =
         }
 
 
+httpSubmitFieldEdit : String -> Int -> String -> Cmd Msg
+httpSubmitFieldEdit fieldValue tableId fieldId =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int tableId )
+                    , ( "fieldId", Json.Encode.string fieldId)
+                    , ( "fieldValue", Json.Encode.string fieldValue)
+                    ]
+        , url = "http://localhost:8080/api/fieldedit"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+
 -- DECODER
 
 craigslistPageDecoder : Decoder String
@@ -262,8 +314,9 @@ craigslistPageDecoder =
 
 tableModelDecoder : Decoder TableModel
 tableModelDecoder = 
-    Json.Decode.map4 TableModel
+    Json.Decode.map5 TableModel
         (Json.Decode.field "name" Json.Decode.string)
+        (Json.Decode.field "id" (Json.Decode.int))
         (Json.Decode.field "topHeadings" (Json.Decode.list string))
         (Json.Decode.field "sideHeadings" (Json.Decode.list string))
         rowsDecoder 

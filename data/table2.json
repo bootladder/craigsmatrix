@@ -1,5 +1,6 @@
 {
     "name": "table2 name",
+    "id": 2,
     "topHeadings": ["sfbay","boston","sacramento","seattle","austin"],    
     "sideHeadings": ["java","golang","python","scala"],    
     "rows":

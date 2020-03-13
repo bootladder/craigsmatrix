@@ -11,6 +11,7 @@ testJson =
     """
     {
     "name": "myname",
+    "id": 1,
     "topHeadings": ["sfbay","boston","sacramento","seattle","austin"],    
     "sideHeadings": ["carpentry","masonry","welding","asdf lkj woerewggdsj sdfds"],    
     "rows":
@@ -92,7 +93,7 @@ suite =
                         Json.Decode.decodeString
                             tableModelDecoder testJson
                     result = case decodedOutput of
-                        Err msg -> Main.TableModel (Json.Decode.errorToString msg) [] [] [[]] 
+                        Err msg -> Main.TableModel (Json.Decode.errorToString msg) 1 [] [] [[]] 
                         Ok a -> a
                 in
                     Expect.equal result.name "myname"
