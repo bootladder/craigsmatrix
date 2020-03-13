@@ -60,15 +60,16 @@ func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Para
 	req := parseTableModelRequest(r.Body)
 
 	var contents []byte
-	if 0 == req.TableId {
-		fmt.Print("\n\nWTF 0")
-		contents, err = ioutil.ReadFile("../data/table1.json")
-		fatal(err)
-	}
 	if 1 == req.TableId {
 		fmt.Print("\n\nWTF 1")
+		contents, err = ioutil.ReadFile("../data/table1.json")
+		fatal(err)
+	} else if 2 == req.TableId {
+		fmt.Print("\n\nWTF 2")
 		contents, err = ioutil.ReadFile("../data/table2.json")
 		fatal(err)
+	} else {
+		contents = []byte("Invalid table ID, brah")
 	}
 
 	w.Header().Set("Content-Type", "application/json")

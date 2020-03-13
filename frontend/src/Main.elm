@@ -80,6 +80,7 @@ type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
     | ReceivedTableModel  (Result Http.Error TableModel)
     | CellClicked CellViewModel
+    | SelectTableClicked Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -119,6 +120,11 @@ update msg model =
                         | craigslistPageHtmlString = "FAIL"}
                     , Cmd.none
                     )
+
+        SelectTableClicked tableId -> 
+            ( model 
+            , httpRequestTableModel tableId
+            )
 
 
 
@@ -206,11 +212,13 @@ sideLabel =
         ]
 
 
-topLabel : Html msg
+topLabel : Html Msg
 topLabel = 
         div [id "topLabel"] 
         [ text "top label" 
         , div [] [text "cities"]
+        , button [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
+        , button [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
         ]
 
 craigslistSearchPage : String -> Html msg
