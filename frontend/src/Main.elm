@@ -38,6 +38,11 @@ type alias Model =
 
 type FieldType = TopField | SideField
 
+fieldTypeToString : FieldType -> String
+fieldTypeToString ft = case ft of
+    TopField -> "top"
+    SideField -> "side"
+
 
 type alias CellViewModel =
     { color : String
@@ -133,7 +138,7 @@ update msg model =
                     )
                 Err _ ->
                     ( {model 
-                        | craigslistPageHtmlString = "SDFSD"}
+                        | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"}
                     , Cmd.none
                     )
 
@@ -148,6 +153,7 @@ update msg model =
         FieldEditorSubmit ->
             ( model, 
                 httpSubmitFieldEdit model.editingFieldInputValue 
+                                    model.editingFieldType
                                     model.tableModel.id 
                                     model.editingFieldIndex)
 
@@ -308,14 +314,15 @@ httpRequestTableModel id =
         }
 
 
-httpSubmitFieldEdit : String -> Int -> Int -> Cmd Msg
-httpSubmitFieldEdit fieldValue tableId fieldIndex =
+httpSubmitFieldEdit : String -> FieldType -> Int -> Int -> Cmd Msg
+httpSubmitFieldEdit fieldValue fieldType tableId fieldIndex =
     Http.post
         { body =
             Http.jsonBody <|
                 Json.Encode.object
                     [ ( "tableId", Json.Encode.int tableId )
-                    , ( "fieldId", Json.Encode.int fieldIndex)
+                    , ( "fieldType", Json.Encode.string <| fieldTypeToString fieldType )
+                    , ( "fieldIndex", Json.Encode.int fieldIndex)
                     , ( "fieldValue", Json.Encode.string fieldValue)
                     ]
         , url = "http://localhost:8080/api/fieldedit"

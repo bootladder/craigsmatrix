@@ -1,72 +1,81 @@
 {
-    "name": "table1 name",
-    "id": 1,
-    "topHeadings": ["tucson","phoenix","austin","houston","dallas"],    
-    "sideHeadings": ["carpentry","masonry","welding","asdf lkj woerewggdsj sdfds"],    
-    "rows":
-        [
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Electrical",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "diff"
-                },
-                {
-                    "url":"https://seattle.craigslist.org/d/jobs/search/jjj?query=Carpenter",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ],
-            [
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                },
-                {
-                    "url":"https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
-                    "hits":1,
-                    "color":"blueCell",
-                    "label": "label"
-                }
-            ]
-        ]
-        
+  "name": "table1 name",
+  "id": 1,
+  "topHeadings": [
+    "tucson",
+    "phoenix",
+    "austin",
+    "houston",
+    "asfda"
+  ],
+  "sideHeadings": [
+    "carpentry",
+    "masonry",
+    "welding",
+    "eyrewry"
+  ],
+  "rows": [
+    [
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      },
+      {
+        "color": "blueCell",
+        "label": "diff",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Electrical",
+        "hits": 1
+      },
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://seattle.craigslist.org/d/jobs/search/jjj?query=Carpenter",
+        "hits": 1
+      }
+    ],
+    [
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      },
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      }
+    ],
+    [
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      },
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      }
+    ],
+    [
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      },
+      {
+        "color": "blueCell",
+        "label": "label",
+        "url": "https://sfbay.craigslist.org/d/jobs/search/jjj?query=Welding",
+        "hits": 1
+      }
+    ]
+  ]
 }

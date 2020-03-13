@@ -21,12 +21,21 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
+var tableModel TableModel
+
 var debug = false
 
 var err error
 
 type tableModelRequest struct {
-	TableId int `json:"tableId"`
+	TableID int `json:"tableId"`
+}
+
+type fieldEditRequest struct {
+	TableID    int    `json:"tableId"`
+	FieldIndex int    `json:"fieldIndex"`
+	FieldValue string `json:"fieldValue"`
+	FieldType  string `json:"fieldType"`
 }
 
 type requestCraigslistPageRequest struct {
@@ -49,6 +58,7 @@ func main() {
 
 	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
+	router.POST("/api/fieldedit", fieldEditHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
@@ -60,17 +70,8 @@ func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Para
 	req := parseTableModelRequest(r.Body)
 
 	var contents []byte
-	if 1 == req.TableId {
-		fmt.Print("\n\nWTF 1")
-		contents, err = ioutil.ReadFile("../data/table1.json")
-		fatal(err)
-	} else if 2 == req.TableId {
-		fmt.Print("\n\nWTF 2")
-		contents, err = ioutil.ReadFile("../data/table2.json")
-		fatal(err)
-	} else {
-		contents = []byte("Invalid table ID, brah")
-	}
+
+	contents = tableModel.toJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -79,6 +80,24 @@ func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Para
 
 func parseTableModelRequest(requestBody io.Reader) tableModelRequest {
 	var req tableModelRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+func fieldEditHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	req := parseFieldEditRequestBody(r.Body)
+
+	editTableModelField(req.TableID, req.FieldIndex, req.FieldValue, req.FieldType)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNotImplemented)
+	w.Write([]byte("Durr"))
+}
+
+func parseFieldEditRequestBody(requestBody io.Reader) fieldEditRequest {
+	var req fieldEditRequest
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 	return req
