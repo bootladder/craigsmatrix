@@ -106,3 +106,73 @@ func updateTableData(tableID int) {
 	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
 	ioutil.WriteFile(filename, jsonBytes, 666)
 }
+
+func addTopField(tableID int) {
+	//don't allow out of bounds tableIDs
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	fileReader, err := os.Open(filename)
+	fatal(err)
+
+	var tableModel TableModel
+	err = json.NewDecoder(fileReader).Decode(&tableModel)
+
+	tableModel.TopHeadings = append(tableModel.TopHeadings, "new field")
+
+	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
+	ioutil.WriteFile(filename, jsonBytes, 666)
+}
+
+func addSideField(tableID int) {
+	//don't allow out of bounds tableIDs
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	fileReader, err := os.Open(filename)
+	fatal(err)
+
+	var tableModel TableModel
+	err = json.NewDecoder(fileReader).Decode(&tableModel)
+
+	tableModel.SideHeadings = append(tableModel.SideHeadings, "new field")
+	tableModel.Rows =
+		append(tableModel.Rows, make([]CellViewModel, len(tableModel.TopHeadings)))
+
+	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
+	ioutil.WriteFile(filename, jsonBytes, 666)
+}
+
+func deleteTopField(tableID int) {
+	//don't allow out of bounds tableIDs
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	fileReader, err := os.Open(filename)
+	fatal(err)
+
+	var tableModel TableModel
+	err = json.NewDecoder(fileReader).Decode(&tableModel)
+
+	tableModel.TopHeadings = tableModel.TopHeadings[:len(tableModel.TopHeadings)-1]
+
+	//keep the rows in sync by slicing to length of top headers
+	for i := range tableModel.Rows {
+		tableModel.Rows[i] = tableModel.Rows[i][:len(tableModel.TopHeadings)]
+	}
+
+	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
+	ioutil.WriteFile(filename, jsonBytes, 666)
+}
+
+func deleteSideField(tableID int) {
+	//don't allow out of bounds tableIDs
+	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	fileReader, err := os.Open(filename)
+	fatal(err)
+
+	var tableModel TableModel
+	err = json.NewDecoder(fileReader).Decode(&tableModel)
+
+	// need to keep the rows and the side headings in sync
+
+	tableModel.SideHeadings = tableModel.SideHeadings[:len(tableModel.SideHeadings)-1]
+	tableModel.Rows = tableModel.Rows[:len(tableModel.SideHeadings)]
+
+	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
+	ioutil.WriteFile(filename, jsonBytes, 666)
+}

@@ -29,6 +29,22 @@ type tableModelRequest struct {
 	TableID int `json:"tableId"`
 }
 
+type addTopFieldRequest struct {
+	TableID int `json:"tableId"`
+}
+
+type addSideFieldRequest struct {
+	TableID int `json:"tableId"`
+}
+
+type deleteTopFieldRequest struct {
+	TableID int `json:"tableId"`
+}
+
+type deleteSideFieldRequest struct {
+	TableID int `json:"tableId"`
+}
+
 type updateTableDataRequest struct {
 	TableID int `json:"tableId"`
 }
@@ -54,6 +70,10 @@ func main() {
 	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
 	router.POST("/api/fieldedit", fieldEditHandler)
+	router.POST("/api/addtopfield", addTopFieldHandler)
+	router.POST("/api/addsidefield", addSideFieldHandler)
+	router.POST("/api/deletetopfield", deleteTopFieldHandler)
+	router.POST("/api/deletesidefield", deleteSideFieldHandler)
 	router.POST("/api/updatetabledata", updateTableDataHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
@@ -62,6 +82,7 @@ func main() {
 	http.ListenAndServe(":8080", router)
 }
 
+// Handler
 func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	req := parseTableModelRequest(r.Body)
 
@@ -79,15 +100,17 @@ func parseTableModelRequest(requestBody io.Reader) tableModelRequest {
 	return req
 }
 
+// Handler
 func fieldEditHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	req := parseFieldEditRequestBody(r.Body)
 
 	editTableModelField(req.TableID, req.FieldIndex, req.FieldValue, req.FieldType)
+	contents := tableModel.toJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Durr"))
+	w.Write(contents)
 }
 
 func parseFieldEditRequestBody(requestBody io.Reader) fieldEditRequest {
@@ -97,6 +120,87 @@ func parseFieldEditRequestBody(requestBody io.Reader) fieldEditRequest {
 	return req
 }
 
+// Handler
+func addTopFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseAddTopFieldRequestBody(r.Body)
+
+	addTopField(req.TableID)
+
+	contents := tableModel.toJSONBytes(req.TableID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+func parseAddTopFieldRequestBody(requestBody io.Reader) addTopFieldRequest {
+	var req addTopFieldRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+// Handler
+func addSideFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseAddSideFieldRequestBody(r.Body)
+
+	addSideField(req.TableID)
+
+	contents := tableModel.toJSONBytes(req.TableID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+func parseAddSideFieldRequestBody(requestBody io.Reader) addSideFieldRequest {
+	var req addSideFieldRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+// Handler
+func deleteTopFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseDeleteTopFieldRequestBody(r.Body)
+
+	deleteTopField(req.TableID)
+
+	contents := tableModel.toJSONBytes(req.TableID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+func parseDeleteTopFieldRequestBody(requestBody io.Reader) deleteTopFieldRequest {
+	var req deleteTopFieldRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+// Handler
+func deleteSideFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseDeleteSideFieldRequestBody(r.Body)
+
+	deleteSideField(req.TableID)
+
+	contents := tableModel.toJSONBytes(req.TableID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+func parseDeleteSideFieldRequestBody(requestBody io.Reader) deleteSideFieldRequest {
+	var req deleteSideFieldRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+// Handler
 func updateTableDataHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	req := parseUpdateTableDataRequestBody(r.Body)
 	updateTableData(req.TableID)
@@ -115,6 +219,7 @@ func parseUpdateTableDataRequestBody(requestBody io.Reader) updateTableDataReque
 	return req
 }
 
+// Handler
 func requestCraigslistPageHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	req := parseRequestCraigslistPageRequestBody(r.Body)

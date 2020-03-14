@@ -6,121 +6,76 @@
     "longisland",
     "boston",
     "philadelphia",
-    "baltimore"
+    "baltimore",
+    "sfbay"
   ],
   "sideHeadings": [
-    "carpentry",
-    "masonry",
-    "welding",
-    "firmware"
+    "firmware|embedded",
+    "c|qa|automation|python|java|cmake|gui|git"
   ],
   "rows": [
     [
       {
-        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
+        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=firmware|embedded",
+        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=firmware|embedded",
+        "hits": 8
       },
       {
-        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
+        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=firmware|embedded",
+        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=firmware|embedded",
+        "hits": 0
       },
       {
-        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://boston.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
+        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=firmware|embedded",
+        "pageUrl": "https://boston.craigslist.org/search/jjj?query=firmware|embedded",
+        "hits": 5
       },
       {
-        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
-      }
-    ],
-    [
-      {
-        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=masonry",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=masonry",
-        "hits": 21
-      },
-      {
-        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://boston.craigslist.org/search/jjj?query=masonry",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=masonry",
-        "hits": 23
-      },
-      {
-        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=masonry",
-        "hits": 17
-      }
-    ],
-    [
-      {
-        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=welding",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=welding",
-        "hits": 22
-      },
-      {
-        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://boston.craigslist.org/search/jjj?query=welding",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=welding",
-        "hits": 23
-      },
-      {
-        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=welding",
-        "hits": 22
-      }
-    ],
-    [
-      {
-        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=firmware",
+        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=firmware|embedded",
+        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=firmware|embedded",
         "hits": 1
       },
       {
-        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=firmware",
+        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=firmware|embedded",
+        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=firmware|embedded",
         "hits": 0
       },
       {
-        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://boston.craigslist.org/search/jjj?query=firmware",
-        "hits": 2
+        "feedUrl": "https://sfbay.craigslist.org/search/jjj?format=rss\u0026query=firmware|embedded",
+        "pageUrl": "https://sfbay.craigslist.org/search/jjj?query=firmware|embedded",
+        "hits": 25
+      }
+    ],
+    [
+      {
+        "feedUrl": "https://newyork.craigslist.org/search/jjj?format=rss\u0026query=c|qa|automation|python|java|cmake|gui|git",
+        "pageUrl": "https://newyork.craigslist.org/search/jjj?query=c|qa|automation|python|java|cmake|gui|git",
+        "hits": 25
       },
       {
-        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=firmware",
-        "hits": 0
+        "feedUrl": "https://longisland.craigslist.org/search/jjj?format=rss\u0026query=c|qa|automation|python|java|cmake|gui|git",
+        "pageUrl": "https://longisland.craigslist.org/search/jjj?query=c|qa|automation|python|java|cmake|gui|git",
+        "hits": 25
       },
       {
-        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=firmware",
-        "hits": 0
+        "feedUrl": "https://boston.craigslist.org/search/jjj?format=rss\u0026query=c|qa|automation|python|java|cmake|gui|git",
+        "pageUrl": "https://boston.craigslist.org/search/jjj?query=c|qa|automation|python|java|cmake|gui|git",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://philadelphia.craigslist.org/search/jjj?format=rss\u0026query=c|qa|automation|python|java|cmake|gui|git",
+        "pageUrl": "https://philadelphia.craigslist.org/search/jjj?query=c|qa|automation|python|java|cmake|gui|git",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://baltimore.craigslist.org/search/jjj?format=rss\u0026query=c|qa|automation|python|java|cmake|gui|git",
+        "pageUrl": "https://baltimore.craigslist.org/search/jjj?query=c|qa|automation|python|java|cmake|gui|git",
+        "hits": 25
+      },
+      {
+        "feedUrl": "https://sfbay.craigslist.org/search/jjj?format=rss\u0026query=c|qa|automation|python|java|cmake|gui|git",
+        "pageUrl": "https://sfbay.craigslist.org/search/jjj?query=c|qa|automation|python|java|cmake|gui|git",
+        "hits": 25
       }
     ]
   ]

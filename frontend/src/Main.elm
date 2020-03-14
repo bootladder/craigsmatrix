@@ -63,13 +63,14 @@ type alias TableModel =
 
 
 
+-- INIT
+
+
 initialTableModel : TableModel
 initialTableModel = 
         TableModel "dummy uninitted" 1 [] [] [[]] 
 
--- INIT
-
-initialUrl = "https://portland.craigslist.org/search/jjj?query=firmware"
+initialUrl = "https://nothingrequestedyet"
 
 init : () -> ( Model, Cmd Msg )
 init _ =
@@ -78,7 +79,7 @@ init _ =
         "dummy debug"
         initialUrl
         initialTableModel
-        "hello???"
+        "no craigslist page requested yet"
         ""
         0
         TopField
@@ -99,6 +100,10 @@ type Msg
     | FieldEditorSubmit
     | TableTopFieldClicked String Int
     | TableSideFieldClicked String Int
+    | TableTopFieldAddClicked
+    | TableTopFieldDeleteClicked
+    | TableSideFieldAddClicked
+    | TableSideFieldDeleteClicked
     | UpdateTableData
 
 
@@ -172,6 +177,24 @@ update msg model =
                        ,editingFieldIndex = fieldIndex
             }, Cmd.none)
 
+
+        TableTopFieldAddClicked  ->
+            (model,
+            httpAddTopField model.tableModel.id)
+
+        TableTopFieldDeleteClicked  ->
+            (model,
+            httpDeleteTopField model.tableModel.id)
+
+        TableSideFieldAddClicked  ->
+            (model,
+            httpAddSideField model.tableModel.id)
+
+        TableSideFieldDeleteClicked  ->
+            (model,
+            httpDeleteSideField model.tableModel.id)
+
+
         UpdateTableData ->
             ( model, httpUpdateTableData model.tableModel.id)
 
@@ -218,9 +241,9 @@ renderTable tableModel =
         ++
         renderedRows
         ++
-        [tr [id "myRow"] [button [] [text "add"]]]
+        [tr [id "myRow"] [button [onClick TableSideFieldAddClicked] [text "add"]]]
         ++
-        [tr [id "myRow"] [button [] [text "del"]]]
+        [tr [id "myRow"] [button [onClick TableSideFieldDeleteClicked] [text "del"]]]
     )
 
 renderTableHeadersRow : List (String) -> Html Msg
@@ -230,9 +253,9 @@ renderTableHeadersRow headings  =
             ++
             List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i)] [text heading]) headings
             ++
-            [ th [] [button [] [text "add"]]]
+            [ th [] [button [onClick TableTopFieldAddClicked] [text "add"]]]
             ++
-            [ th [] [button [] [text "del"]]]
+            [ th [] [button [onClick TableTopFieldDeleteClicked] [text "del"]]]
     )
 
 renderRow : Int -> String -> List (CellViewModel) ->  Html Msg
@@ -342,6 +365,57 @@ httpSubmitFieldEdit fieldValue fieldType tableId fieldIndex =
         , url = "http://localhost:8080/api/fieldedit"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
+
+
+httpAddTopField : Int -> Cmd Msg
+httpAddTopField tableId =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int tableId )
+                    ]
+        , url = "http://localhost:8080/api/addtopfield"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+httpAddSideField : Int -> Cmd Msg
+httpAddSideField tableId =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int tableId )
+                    ]
+        , url = "http://localhost:8080/api/addsidefield"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+
+httpDeleteTopField : Int -> Cmd Msg
+httpDeleteTopField tableId =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int tableId )
+                    ]
+        , url = "http://localhost:8080/api/deletetopfield"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+httpDeleteSideField : Int -> Cmd Msg
+httpDeleteSideField tableId =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "tableId", Json.Encode.int tableId )
+                    ]
+        , url = "http://localhost:8080/api/deletesidefield"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
 
 
 httpUpdateTableData : Int -> Cmd Msg

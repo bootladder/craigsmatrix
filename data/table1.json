@@ -4,15 +4,11 @@
   "topHeadings": [
     "tucson",
     "phoenix",
-    "flagstaff",
-    "houston",
-    "dallas"
+    "paris"
   ],
   "sideHeadings": [
     "carpentry",
-    "masonry",
-    "welding",
-    "firmware"
+    "welding"
   ],
   "rows": [
     [
@@ -27,53 +23,16 @@
         "hits": 25
       },
       {
-        "feedUrl": "https://flagstaff.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://flagstaff.craigslist.org/search/jjj?query=carpentry",
-        "hits": 20
-      },
-      {
-        "feedUrl": "https://houston.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://houston.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://dallas.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
-        "pageUrl": "https://dallas.craigslist.org/search/jjj?query=carpentry",
-        "hits": 25
-      }
-    ],
-    [
-      {
-        "feedUrl": "https://tucson.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://tucson.craigslist.org/search/jjj?query=masonry",
-        "hits": 11
-      },
-      {
-        "feedUrl": "https://phoenix.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://phoenix.craigslist.org/search/jjj?query=masonry",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://flagstaff.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://flagstaff.craigslist.org/search/jjj?query=masonry",
-        "hits": 6
-      },
-      {
-        "feedUrl": "https://houston.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://houston.craigslist.org/search/jjj?query=masonry",
-        "hits": 5
-      },
-      {
-        "feedUrl": "https://dallas.craigslist.org/search/jjj?format=rss\u0026query=masonry",
-        "pageUrl": "https://dallas.craigslist.org/search/jjj?query=masonry",
-        "hits": 15
+        "feedUrl": "https://paris.craigslist.org/search/jjj?format=rss\u0026query=carpentry",
+        "pageUrl": "https://paris.craigslist.org/search/jjj?query=carpentry",
+        "hits": 0
       }
     ],
     [
       {
         "feedUrl": "https://tucson.craigslist.org/search/jjj?format=rss\u0026query=welding",
         "pageUrl": "https://tucson.craigslist.org/search/jjj?query=welding",
-        "hits": 24
+        "hits": 23
       },
       {
         "feedUrl": "https://phoenix.craigslist.org/search/jjj?format=rss\u0026query=welding",
@@ -81,45 +40,8 @@
         "hits": 25
       },
       {
-        "feedUrl": "https://flagstaff.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://flagstaff.craigslist.org/search/jjj?query=welding",
-        "hits": 1
-      },
-      {
-        "feedUrl": "https://houston.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://houston.craigslist.org/search/jjj?query=welding",
-        "hits": 25
-      },
-      {
-        "feedUrl": "https://dallas.craigslist.org/search/jjj?format=rss\u0026query=welding",
-        "pageUrl": "https://dallas.craigslist.org/search/jjj?query=welding",
-        "hits": 25
-      }
-    ],
-    [
-      {
-        "feedUrl": "https://tucson.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://tucson.craigslist.org/search/jjj?query=firmware",
-        "hits": 0
-      },
-      {
-        "feedUrl": "https://phoenix.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://phoenix.craigslist.org/search/jjj?query=firmware",
-        "hits": 4
-      },
-      {
-        "feedUrl": "https://flagstaff.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://flagstaff.craigslist.org/search/jjj?query=firmware",
-        "hits": 0
-      },
-      {
-        "feedUrl": "https://houston.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://houston.craigslist.org/search/jjj?query=firmware",
-        "hits": 0
-      },
-      {
-        "feedUrl": "https://dallas.craigslist.org/search/jjj?format=rss\u0026query=firmware",
-        "pageUrl": "https://dallas.craigslist.org/search/jjj?query=firmware",
+        "feedUrl": "https://paris.craigslist.org/search/jjj?format=rss\u0026query=welding",
+        "pageUrl": "https://paris.craigslist.org/search/jjj?query=welding",
         "hits": 0
       }
     ]
