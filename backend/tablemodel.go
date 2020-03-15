@@ -115,6 +115,8 @@ func sliceContains(slice []string, elem string) bool {
 }
 
 func addTopField(tableID int) {
+
+	// TODO: populate table model rows
 	tableModel := getTableModelByID(tableID)
 	tableModel.TopHeadings = append(tableModel.TopHeadings, "new field")
 	writeTable(tableModel, tableID)

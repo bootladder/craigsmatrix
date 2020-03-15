@@ -216,16 +216,21 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div [id "container"] 
-    [ div [id "pageHeader"] [ text "page header"]
+    [ pageHeader
     , tableNameLabel model.tableModel.name
-    , topLabel
-    , sideLabel
     , constantsLabel
     , fieldEditor model.editingFieldInputValue
     , div [id "myTable"] [renderTable model.tableModel]
     , div [id "urlView"] [text model.currentUrl]
     , craigslistSearchPage  model.craigslistPageHtmlString
     ]
+
+pageHeader : Html Msg
+pageHeader =
+    div [id "pageHeader"] [ 
+        h1 [] [text "CraigslistMatrix."]
+        , h2 [] [text "Take your search to the next dimension.  The second dimension."]
+        ]
 
 renderTable : TableModel -> Html Msg
 renderTable tableModel =
@@ -276,36 +281,36 @@ tableNameLabel name =
         div [id "tableNameLabel"]
             [ text "table name label"
             , div [] [text name]
-            , button [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
-            , button [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
-            , button [ onClick <| SelectTableClicked 3 ] [ text "Table 3"]
-            , button [ onClick <| SelectTableClicked 4 ] [ text "Table 4"]
-            , button [ onClick <| SelectTableClicked 5 ] [ text "Table 5"]
-            , button [ onClick <| SelectTableClicked 6 ] [ text "Table 6"]
-            , button [ onClick <| SelectTableClicked 7 ] [ text "Table 7"]
+            , select [] [
+
+              option [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
+            , option [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
+            , option [ onClick <| SelectTableClicked 3 ] [ text "Table 3"]
+            , option [ onClick <| SelectTableClicked 4 ] [ text "Table 4"]
+            , option [ onClick <| SelectTableClicked 5 ] [ text "Table 5"]
+            ]
+            , button [ onClick <| SelectTableClicked 6 ] [ text "Add New Table"]
+            , button [ onClick <| SelectTableClicked 7 ] [ text "Delete This Table"]
+            , input [ ] []
+            , button [] [ text "Update Table Name"]
             ]
 
 constantsLabel : Html msg
 constantsLabel = 
         div [id "constantsLabel"] 
             [ text "constants label" 
-            , div [] [text "jobs"]
+            , select [] [
+                  option [] [text "community"]
+                , option [] [text "events"]
+                , option [] [text "for sale"]
+                , option [] [text "gigs"]
+                , option [] [text "housing"]
+                , option [] [text "jobs"]
+                , option [] [text "resumes"]
+                , option [] [text "services"]
+                ]
             ]
 
-sideLabel : Html msg
-sideLabel = 
-        div [id "sideLabel"] 
-        [ text "side label" 
-        , div [] [text "search query"]
-        ]
-
-
-topLabel : Html Msg
-topLabel = 
-        div [id "topLabel"] 
-        [ text "top label" 
-        , div [] [text "cities"]
-        ]
 
 fieldEditor : String -> Html Msg
 fieldEditor editorValue =

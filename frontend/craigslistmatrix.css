@@ -1,11 +1,23 @@
 #container {
-    margin: 5px;
-    padding: 5px;
-    background-color: rgb(255, 234, 234);
+    margin: 50px;
+    padding: 15px;
+    background-color: rgba(255, 234, 234, 0.685);
+}
+
+#pageHeader h1 {
+   font-size: 30; 
+}
+
+#pageHeader h2 {
+   font-size: 20; 
+}
+
+#pageHeader {
+    margin-bottom: 10px;
 }
 
 #myTable {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.788);
 }
 #topLabel {
     background-color: blue;
@@ -17,11 +29,30 @@
     background-color: orange;
 }
 #tableNameLabel {
-    background-color: pink;
+    background-color: rgba(255, 192, 203, 0.514);
 }
 #urlView {
     background-color: pink;
 }
 .blueCell {
     background-color: #77d3fd;
+}
+
+th {
+    padding: 10px;
+}
+
+td {
+    text-align: center;
+}
+
+th:hover {
+    background-color: white;
+}
+
+td:hover {
+    background-color: white;
+}
+body {
+     background-image: url("matrix.jpg");
 }
