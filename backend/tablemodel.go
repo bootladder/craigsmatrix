@@ -12,18 +12,19 @@ import (
 
 // TableModel is the model that is sent to the front end
 type TableModel struct {
-	Name         string            `json:"name"`
-	ID           int               `json:"id"`
-	TopHeadings  []string          `json:"topHeadings"`
-	SideHeadings []string          `json:"sideHeadings"`
-	Rows         [][]CellViewModel `json:"rows"`
+	Name         string        `json:"name"`
+	ID           int           `json:"id"`
+	TopHeadings  []string      `json:"topHeadings"`
+	SideHeadings []string      `json:"sideHeadings"`
+	Rows         [][]CellModel `json:"rows"`
 }
 
-//CellViewModel this isn't a viewmodel, it's a model.  Change the name
-type CellViewModel struct {
-	FeedURL string `json:"feedUrl"`
-	PageURL string `json:"pageUrl"`
-	Hits    int    `json:"hits"`
+//CellModel models a RSS feed
+type CellModel struct {
+	FeedURL          string `json:"feedUrl"`
+	PageURL          string `json:"pageUrl"`
+	Hits             int    `json:"hits"`
+	LinksAlreadySeen []string
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
@@ -37,9 +38,9 @@ func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) 
 		fmt.Print("NO FIELD TYPE SUPPLIED. DOING NOTHING")
 	}
 
-	tableModel.Rows = make([][]CellViewModel, len(tableModel.SideHeadings))
+	tableModel.Rows = make([][]CellModel, len(tableModel.SideHeadings))
 	for i := range tableModel.Rows {
-		tableModel.Rows[i] = make([]CellViewModel, len(tableModel.TopHeadings))
+		tableModel.Rows[i] = make([]CellModel, len(tableModel.TopHeadings))
 
 		for j := range tableModel.Rows[i] {
 			tableModel.Rows[i][j].FeedURL = makeCraigslistFeedURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
@@ -79,18 +80,38 @@ func updateTableData(tableID int) {
 			feedURL := tableModel.Rows[i][j].FeedURL
 
 			feed, _ := fp.ParseURL(feedURL)
-			for _, item := range feed.Items {
-				fmt.Print(item.Title)
-			}
-			fmt.Println(feed.Title)
-
+			//fmt.Println(feed.Title)
 			fmt.Printf("There are %d items\n", len(feed.Items))
 
-			tableModel.Rows[i][j].Hits = len(feed.Items)
+			var numberOfUnseenLinks = 0
+			for _, item := range feed.Items {
+				fmt.Print(item.Title)
+				if false == sliceContains(tableModel.Rows[i][j].LinksAlreadySeen, item.Link) {
+					numberOfUnseenLinks++
+				}
+			}
+			fmt.Printf("There are %d UNSEEN items\n", numberOfUnseenLinks)
+
+			tableModel.Rows[i][j].Hits = numberOfUnseenLinks
+
+			tableModel.Rows[i][j].LinksAlreadySeen = make([]string, len(feed.Items))
+			for z, item := range feed.Items {
+				tableModel.Rows[i][j].LinksAlreadySeen[z] = item.Link
+			}
+
 		}
 	}
 
 	writeTable(tableModel, tableID)
+}
+
+func sliceContains(slice []string, elem string) bool {
+	for i := range slice {
+		if slice[i] == elem {
+			return true
+		}
+	}
+	return false
 }
 
 func addTopField(tableID int) {
@@ -103,7 +124,7 @@ func addSideField(tableID int) {
 	tableModel := getTableModelByID(tableID)
 	tableModel.SideHeadings = append(tableModel.SideHeadings, "new field")
 	tableModel.Rows =
-		append(tableModel.Rows, make([]CellViewModel, len(tableModel.TopHeadings)))
+		append(tableModel.Rows, make([]CellModel, len(tableModel.TopHeadings)))
 
 	writeTable(tableModel, tableID)
 }
