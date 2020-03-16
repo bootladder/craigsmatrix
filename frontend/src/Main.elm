@@ -32,6 +32,7 @@ type alias Model =
     { debugBreadcrumb : String
     , currentUrl : String
     , tableModel : TableModel
+    , allTableNames : List(String)
     , craigslistPageHtmlString : String
     , editingFieldInputValue : String
     , editingFieldIndex : Int
@@ -79,11 +80,12 @@ init _ =
         "dummy debug"
         initialUrl
         initialTableModel
+        []
         "no craigslist page requested yet"
         ""
         0
         TopField
-    , (httpRequestTableModel 1)
+    , Cmd.batch [(httpRequestTableModel 1), httpRequestAllTableNames]
     )
 
 
@@ -94,6 +96,7 @@ init _ =
 type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
     | ReceivedTableModel  (Result Http.Error TableModel)
+    | ReceivedAllTableNames  (Result Http.Error (List (String)))
     | CellClicked CellViewModel
     | SelectTableClicked Int
     | FieldEditorChanged String
@@ -149,6 +152,15 @@ update msg model =
                         | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"}
                     , Cmd.none
                     )
+
+        ReceivedAllTableNames  result ->
+            case result of
+                Ok names ->
+                    ( {model | allTableNames = names}, Cmd.none)
+
+                Err _ -> ({model
+                        | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"}
+                        , Cmd.none)
 
         SelectTableClicked tableId -> 
             ( model 
@@ -355,6 +367,18 @@ httpRequestTableModel id =
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 
+httpRequestAllTableNames : Cmd Msg
+httpRequestAllTableNames =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "nothing here", Json.Encode.int 99 )
+                    ]
+        , url = "http://localhost:8080/api/alltablenames"
+        , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNames jsonResult) allTableNamesDecoder
+        }
+
 
 httpSubmitFieldEdit : String -> FieldType -> Int -> Int -> Cmd Msg
 httpSubmitFieldEdit fieldValue fieldType tableId fieldIndex =
@@ -461,4 +485,10 @@ cellViewModelDecoder =
     Json.Decode.map3 CellViewModel
         (Json.Decode.field "pageUrl" Json.Decode.string)
         (Json.Decode.field "feedUrl" Json.Decode.string)
+
+
         (Json.Decode.field "hits" Json.Decode.int)
+
+allTableNamesDecoder : Decoder (List (String))
+allTableNamesDecoder =
+    (Json.Decode.list string)

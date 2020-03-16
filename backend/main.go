@@ -29,6 +29,10 @@ type tableModelRequest struct {
 	TableID int `json:"tableId"`
 }
 
+type allTableNamesRequest struct {
+	//dont care
+}
+
 type addTopFieldRequest struct {
 	TableID int `json:"tableId"`
 }
@@ -69,6 +73,7 @@ func main() {
 
 	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
+	router.POST("/api/alltablenames", allTableNamesHandler)
 	router.POST("/api/fieldedit", fieldEditHandler)
 	router.POST("/api/addtopfield", addTopFieldHandler)
 	router.POST("/api/addsidefield", addSideFieldHandler)
@@ -98,6 +103,16 @@ func parseTableModelRequest(requestBody io.Reader) tableModelRequest {
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 	return req
+}
+
+// Handler
+func allTableNamesHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	contents := JSONListOfTableNames()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
 }
 
 // Handler

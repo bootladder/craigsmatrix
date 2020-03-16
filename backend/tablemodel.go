@@ -176,3 +176,8 @@ func getTableModelByID(tableID int) TableModel {
 	err = json.NewDecoder(fileReader).Decode(&tableModel)
 	return tableModel
 }
+
+func JSONListOfTableNames() []byte {
+
+	return []byte("durr")
+}
