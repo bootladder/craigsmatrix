@@ -19,8 +19,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-var tableModel TableModel
-
 var debug = false
 
 var err error
@@ -68,6 +66,7 @@ type requestCraigslistPageResponse struct {
 }
 
 func main() {
+
 	router := httprouter.New()
 	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
 
@@ -91,7 +90,7 @@ func main() {
 func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	req := parseTableModelRequest(r.Body)
 
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -121,7 +120,7 @@ func fieldEditHandler(w http.ResponseWriter, r *http.Request, p httprouter.Param
 	req := parseFieldEditRequestBody(r.Body)
 
 	editTableModelField(req.TableID, req.FieldIndex, req.FieldValue, req.FieldType)
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -141,7 +140,7 @@ func addTopFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.Par
 
 	addTopField(req.TableID)
 
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -161,7 +160,7 @@ func addSideFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 
 	addSideField(req.TableID)
 
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -181,7 +180,7 @@ func deleteTopFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter.
 
 	deleteTopField(req.TableID)
 
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -201,7 +200,7 @@ func deleteSideFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter
 
 	deleteSideField(req.TableID)
 
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -220,7 +219,7 @@ func updateTableDataHandler(w http.ResponseWriter, r *http.Request, p httprouter
 	req := parseUpdateTableDataRequestBody(r.Body)
 	updateTableData(req.TableID)
 
-	contents := tableModel.toJSONBytes(req.TableID)
+	contents := modelToJSONBytes(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

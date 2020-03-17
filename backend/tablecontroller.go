@@ -10,7 +10,9 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-// TableModel is the model that is sent to the front end
+var allTableModels = loadTableModelsDataFile()
+
+// TableModel stores everything in a table
 type TableModel struct {
 	Name         string        `json:"name"`
 	ID           int           `json:"id"`
@@ -25,6 +27,21 @@ type CellModel struct {
 	PageURL          string `json:"pageUrl"`
 	Hits             int    `json:"hits"`
 	LinksAlreadySeen []string
+}
+
+func loadTableModelsDataFile() []TableModel {
+
+	filename := fmt.Sprintf("../data/allTableModels.json")
+	fileReader, err := os.Open(filename)
+	fatal(err)
+	b, err := ioutil.ReadAll(fileReader)
+	fatal(err)
+
+	var tableModels []TableModel
+	json.Unmarshal(b, &tableModels)
+
+	fmt.Printf("%v", tableModels)
+	return tableModels
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
@@ -58,15 +75,6 @@ func makeCraigslistFeedURL(side, top string) string {
 
 func makeCraigslistPageURL(side, top string) string {
 	return "https://" + top + ".craigslist.org/search/jjj?query=" + side
-}
-
-func (t *TableModel) toJSONBytes(tableID int) []byte {
-	//don't allow out of bounds tableIDs
-	filename := fmt.Sprintf("../data/table%d.json", tableID)
-
-	contents, err := ioutil.ReadFile(filename)
-	fatal(err)
-	return contents
 }
 
 func updateTableData(tableID int) {
@@ -153,6 +161,11 @@ func deleteSideField(tableID int) {
 	writeTable(tableModel, tableID)
 }
 
+func JSONListOfTableNames() []byte {
+
+	return []byte("durr")
+}
+
 func openTableID(tableID int) io.Reader {
 	//don't allow out of bounds tableIDs
 	filename := fmt.Sprintf("../data/table%d.json", tableID)
@@ -162,22 +175,19 @@ func openTableID(tableID int) io.Reader {
 }
 
 func writeTable(tableModel TableModel, tableID int) {
-	filename := fmt.Sprintf("../data/table%d.json", tableID)
+	allTableModels[tableID-1] = tableModel
 
-	jsonBytes, _ := json.MarshalIndent(tableModel, "", "  ")
+	filename := fmt.Sprintf("../data/allTableModels.json")
+
+	jsonBytes, _ := json.MarshalIndent(allTableModels, "", "  ")
 	ioutil.WriteFile(filename, jsonBytes, 666)
 }
 
 func getTableModelByID(tableID int) TableModel {
-
-	fileReader := openTableID(tableID)
-
-	var tableModel TableModel
-	err = json.NewDecoder(fileReader).Decode(&tableModel)
-	return tableModel
+	return allTableModels[tableID-1]
 }
 
-func JSONListOfTableNames() []byte {
-
-	return []byte("durr")
+func modelToJSONBytes(tableID int) []byte {
+	contents, _ := json.MarshalIndent(&allTableModels[tableID-1], "", "  ")
+	return contents
 }
