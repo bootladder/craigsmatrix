@@ -229,7 +229,7 @@ view : Model -> Html Msg
 view model =
     div [id "container"] 
     [ pageHeader
-    , tableNameLabel model.tableModel.name
+    , tableSelectionWidget model
     , constantsLabel
     , fieldEditor model.editingFieldInputValue
     , div [id "myTable"] [renderTable model.tableModel]
@@ -288,24 +288,22 @@ renderCellViewModel cellViewModel =
     td [class "blueCell", onClick (CellClicked cellViewModel)] [text <| String.fromInt cellViewModel.hits]
 
 
-tableNameLabel : String -> Html Msg
-tableNameLabel name =
+tableSelectionWidget : Model -> Html Msg
+tableSelectionWidget model =
         div [id "tableNameLabel"]
             [ text "table name label"
-            , div [] [text name]
-            , select [] [
-
-              option [ onClick <| SelectTableClicked 1 ] [ text "Table 1"]
-            , option [ onClick <| SelectTableClicked 2 ] [ text "Table 2"]
-            , option [ onClick <| SelectTableClicked 3 ] [ text "Table 3"]
-            , option [ onClick <| SelectTableClicked 4 ] [ text "Table 4"]
-            , option [ onClick <| SelectTableClicked 5 ] [ text "Table 5"]
-            ]
+            , div [] [text "DURRRR"]
+            , tableSelect model
             , button [ onClick <| SelectTableClicked 6 ] [ text "Add New Table"]
             , button [ onClick <| SelectTableClicked 7 ] [ text "Delete This Table"]
             , input [ ] []
             , button [] [ text "Update Table Name"]
             ]
+
+tableSelect : Model -> Html Msg
+tableSelect model =
+        select [] 
+            (List.indexedMap (\i name -> option [ onClick <| SelectTableClicked i ] [text name]) model.allTableNames)
 
 constantsLabel : Html msg
 constantsLabel = 
