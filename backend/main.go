@@ -107,7 +107,7 @@ func parseTableModelRequest(requestBody io.Reader) tableModelRequest {
 // Handler
 func allTableNamesHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
-	contents := JSONListOfTableNames()
+	contents := listOfTableNamesAsJSONBytes()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

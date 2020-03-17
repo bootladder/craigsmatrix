@@ -161,9 +161,16 @@ func deleteSideField(tableID int) {
 	writeTable(tableModel, tableID)
 }
 
-func JSONListOfTableNames() []byte {
+func listOfTableNamesAsJSONBytes() []byte {
 
-	return []byte("durr")
+	var names []string
+	for i := range allTableModels {
+		names = append(names, allTableModels[i].Name)
+	}
+
+	b, _ := json.MarshalIndent(&names, "", "  ")
+
+	return b
 }
 
 func openTableID(tableID int) io.Reader {
