@@ -21,6 +21,16 @@ type TableModel struct {
 	Rows         [][]CellModel `json:"rows"`
 }
 
+func makeNewtableModel(id int) TableModel {
+	tm := TableModel{}
+	tm.Name = "New Table"
+	tm.ID = id
+	tm.TopHeadings = []string{"TopHeading"}
+	tm.SideHeadings = []string{"SideHeading"}
+	tm.Rows = [][]CellModel{}
+	return tm
+}
+
 //CellModel models a RSS feed
 type CellModel struct {
 	FeedURL          string `json:"feedUrl"`
@@ -159,6 +169,12 @@ func deleteSideField(tableID int) {
 	tableModel.Rows = tableModel.Rows[:len(tableModel.SideHeadings)]
 
 	writeTable(tableModel, tableID)
+}
+
+func addTable() int {
+	numTables := len(allTableModels)
+	allTableModels = append(allTableModels, makeNewtableModel(numTables))
+	return numTables
 }
 
 func listOfTableNamesAsJSONBytes() []byte {

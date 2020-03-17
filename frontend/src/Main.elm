@@ -99,6 +99,8 @@ type Msg
     | ReceivedAllTableNames  (Result Http.Error (List (String)))
     | CellClicked CellViewModel
     | SelectTableClicked Int
+    | AddTableClicked
+    | DeleteTableClicked
     | FieldEditorChanged String
     | FieldEditorSubmit
     | TableTopFieldClicked String Int
@@ -166,6 +168,9 @@ update msg model =
             ( model 
             , httpRequestTableModel tableId
             )
+
+        AddTableClicked -> (model, httpAddTable)
+        DeleteTableClicked -> (model, Cmd.none)
 
         FieldEditorChanged input ->
             ( {model| editingFieldInputValue = input}, Cmd.none)
@@ -294,8 +299,8 @@ tableSelectionWidget model =
             [ text "table name label"
             , div [] [text "DURRRR"]
             , tableSelect model
-            , button [ onClick <| SelectTableClicked 6 ] [ text "Add New Table"]
-            , button [ onClick <| SelectTableClicked 7 ] [ text "Delete This Table"]
+            , button [ onClick AddTableClicked ] [ text "Add New Table"]
+            , button [ onClick DeleteTableClicked ] [ text "Delete This Table"]
             , input [ ] []
             , button [] [ text "Update Table Name"]
             ]
@@ -440,6 +445,20 @@ httpDeleteSideField tableId =
                     [ ( "tableId", Json.Encode.int tableId )
                     ]
         , url = "http://localhost:8080/api/deletesidefield"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+
+ 
+httpAddTable : Cmd Msg
+httpAddTable =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "nothing", Json.Encode.int 99 )
+                    ]
+        , url = "http://localhost:8080/api/addtable"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 
