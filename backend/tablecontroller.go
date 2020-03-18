@@ -23,7 +23,7 @@ type TableModel struct {
 
 func makeNewtableModel(id int) TableModel {
 	tm := TableModel{}
-	tm.Name = "New Table"
+	tm.Name = fmt.Sprintf("New Table id %d ", id)
 	tm.ID = id
 	tm.TopHeadings = []string{"TopHeading"}
 	tm.SideHeadings = []string{"SideHeading"}
@@ -178,7 +178,13 @@ func deleteSideField(tableID int) {
 
 func addTable() int {
 	numTables := len(allTableModels)
-	allTableModels = append(allTableModels, makeNewtableModel(numTables))
+	//pick a unique ID
+	newTableID := numTables + 1
+	newTableModel := makeNewtableModel(newTableID)
+
+	allTableModels = append(allTableModels, newTableModel)
+
+	writeTable(newTableModel, newTableID)
 	return numTables
 }
 

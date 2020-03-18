@@ -323,7 +323,14 @@ tableSelectionWidget model =
 tableSelect : Model -> Html Msg
 tableSelect model =
         select [] 
-            (List.indexedMap (\i tablenameandid -> option [ onClick <| SelectTableClicked tablenameandid.id ] [text tablenameandid.name]) model.allTableNamesAndIds)
+            (List.indexedMap 
+            (\i tablenameandid -> 
+                option 
+                [ onClick <| SelectTableClicked tablenameandid.id 
+                , selected (if tablenameandid.id == model.tableModel.id then True else False)] 
+                [text tablenameandid.name]
+            ) 
+            model.allTableNamesAndIds)
 
 constantsLabel : Html msg
 constantsLabel = 
