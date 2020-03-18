@@ -27,7 +27,7 @@ type tableModelRequest struct {
 	TableID int `json:"tableId"`
 }
 
-type allTableNamesRequest struct {
+type allTableNamesAndIDsRequest struct {
 	//dont care
 }
 
@@ -72,7 +72,7 @@ func main() {
 
 	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
-	router.POST("/api/alltablenames", allTableNamesHandler)
+	router.POST("/api/alltablenamesandids", allTableNamesAndIDsHandler)
 	router.POST("/api/fieldedit", fieldEditHandler)
 	router.POST("/api/addtopfield", addTopFieldHandler)
 	router.POST("/api/addsidefield", addSideFieldHandler)
@@ -106,9 +106,9 @@ func parseTableModelRequest(requestBody io.Reader) tableModelRequest {
 }
 
 // Handler
-func allTableNamesHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func allTableNamesAndIDsHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
-	contents := listOfTableNamesAsJSONBytes()
+	contents := listOfTableNamesAndIDsAsJSONBytes()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

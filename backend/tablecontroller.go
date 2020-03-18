@@ -177,15 +177,26 @@ func addTable() int {
 	return numTables
 }
 
-func listOfTableNamesAsJSONBytes() []byte {
+func listOfTableNamesAndIDsAsJSONBytes() []byte {
 
-	var names []string
+	type durr struct {
+		ID   int
+		Name string
+	}
+	var namesandids []durr
+	fmt.Print("DUHHH")
 	for i := range allTableModels {
-		names = append(names, allTableModels[i].Name)
+		fmt.Printf("DUHHH %s %d", allTableModels[i].Name, allTableModels[i].ID)
+		wtf := durr{allTableModels[i].ID, allTableModels[i].Name}
+
+		fmt.Printf("DUHHH %v ", wtf)
+		namesandids = append(namesandids, wtf)
+		fmt.Printf("WTF %v ", namesandids)
 	}
 
-	b, _ := json.MarshalIndent(&names, "", "  ")
+	b, _ := json.MarshalIndent(&namesandids, "", "  ")
 
+	fmt.Printf("WTF %v ", b)
 	return b
 }
 

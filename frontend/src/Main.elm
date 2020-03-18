@@ -32,7 +32,7 @@ type alias Model =
     { debugBreadcrumb : String
     , currentUrl : String
     , tableModel : TableModel
-    , allTableNames : List(String)
+    , allTableNamesAndIds : List((Int, String))
     , craigslistPageHtmlString : String
     , editingFieldInputValue : String
     , editingFieldIndex : Int
@@ -85,7 +85,7 @@ init _ =
         ""
         0
         TopField
-    , Cmd.batch [(httpRequestTableModel 1), httpRequestAllTableNames]
+    , Cmd.batch [(httpRequestTableModel 1), httpRequestAllTableNamesAndIds]
     )
 
 
@@ -96,7 +96,7 @@ init _ =
 type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
     | ReceivedTableModel  (Result Http.Error TableModel)
-    | ReceivedAllTableNames  (Result Http.Error (List (String)))
+    | ReceivedAllTableNamesAndIds  (Result Http.Error (List ((Int,String))))
     | CellClicked CellViewModel
     | SelectTableClicked Int
     | AddTableClicked
@@ -155,10 +155,10 @@ update msg model =
                     , Cmd.none
                     )
 
-        ReceivedAllTableNames  result ->
+        ReceivedAllTableNamesAndIds  result ->
             case result of
                 Ok names ->
-                    ( {model | allTableNames = names}, Cmd.none)
+                    ( {model | allTableNamesAndIds = names}, Cmd.none)
 
                 Err _ -> ({model
                         | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"}
@@ -308,7 +308,7 @@ tableSelectionWidget model =
 tableSelect : Model -> Html Msg
 tableSelect model =
         select [] 
-            (List.indexedMap (\i name -> option [ onClick <| SelectTableClicked i ] [text name]) model.allTableNames)
+            (List.indexedMap (\i (id,name) -> option [ onClick <| SelectTableClicked i ] [text name]) model.allTableNamesAndIds)
 
 constantsLabel : Html msg
 constantsLabel = 
@@ -370,16 +370,16 @@ httpRequestTableModel id =
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 
-httpRequestAllTableNames : Cmd Msg
-httpRequestAllTableNames =
+httpRequestAllTableNamesAndIds : Cmd Msg
+httpRequestAllTableNamesAndIds =
     Http.post
         { body =
             Http.jsonBody <|
                 Json.Encode.object
                     [ ( "nothing here", Json.Encode.int 99 )
                     ]
-        , url = "http://localhost:8080/api/alltablenames"
-        , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNames jsonResult) allTableNamesDecoder
+        , url = "http://localhost:8080/api/alltablenamesandids"
+        , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
         }
 
 
@@ -506,6 +506,11 @@ cellViewModelDecoder =
 
         (Json.Decode.field "hits" Json.Decode.int)
 
-allTableNamesDecoder : Decoder (List (String))
-allTableNamesDecoder =
-    (Json.Decode.list string)
+allTableNamesAndIdsDecoder : Decoder (List ((Int,String)))
+allTableNamesAndIdsDecoder =
+    (Json.Decode.list tableNameAndIdDecoder)
+
+
+tableNameAndIdDecoder : Decoder (Int,String)
+tableNameAndIdDecoder =
+    Json.Decode.map2 (\a b -> (a,b)) (Json.Decode.field "id" Json.Decode.int) (Json.Decode.field "name" Json.Decode.string)
