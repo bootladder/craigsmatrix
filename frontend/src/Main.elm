@@ -89,7 +89,7 @@ init _ =
         ""
         0
         TopField
-    , Cmd.batch [(httpRequestTableModel 1), httpRequestAllTableNamesAndIds]
+    , Cmd.batch [(httpRequestActiveTableModel), httpRequestAllTableNamesAndIds]
     )
 
 
@@ -162,7 +162,7 @@ update msg model =
         ReceivedAllTableNamesAndIds  result ->
             case result of
                 Ok names ->
-                    ( {model | allTableNamesAndIds = names}, Cmd.none)
+                    ( {model | allTableNamesAndIds = names}, httpRequestActiveTableModel)
 
                 Err e -> ({model
                         | craigslistPageHtmlString = "FAIL: ReceivedAllTableNamesAndIds"
@@ -176,7 +176,9 @@ update msg model =
             , httpRequestTableModel tableId
             )
 
-        AddTableClicked -> (model, httpAddTable)
+        AddTableClicked -> (model, 
+                    httpAddTable)
+
         DeleteTableClicked -> (model, Cmd.none)
 
         FieldEditorChanged input ->
@@ -481,7 +483,7 @@ httpAddTable =
                     [ ( "nothing", Json.Encode.int 99 )
                     ]
         , url = "http://localhost:8080/api/addtable"
-        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
         }
 
 
@@ -495,6 +497,18 @@ httpUpdateTableData tableId =
                     [ ( "tableId", Json.Encode.int tableId )
                     ]
         , url = "http://localhost:8080/api/updatetabledata"
+        , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
+        }
+
+httpRequestActiveTableModel : Cmd Msg
+httpRequestActiveTableModel =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "dontcare", Json.Encode.int 99 )
+                    ]
+        , url = "http://localhost:8080/api/activetable"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 

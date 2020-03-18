@@ -10,7 +10,13 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-var allTableModels = loadTableModelsDataFile()
+var model = loadModelDataFile()
+
+// Model is the model for everything
+type Model struct {
+	ActiveTableModelID int          `json:"activetablemodelid"`
+	TableModels        []TableModel `json:"tablemodels"`
+}
 
 // TableModel stores everything in a table
 type TableModel struct {
@@ -39,24 +45,26 @@ type CellModel struct {
 	LinksAlreadySeen []string
 }
 
+// TableNameAndID  is used so the frontend can populate the dropdown
 type TableNameAndID struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-func loadTableModelsDataFile() []TableModel {
+func loadModelDataFile() Model {
 
-	filename := fmt.Sprintf("../data/allTableModels.json")
+	// create one if it doesnt exist
+	filename := fmt.Sprintf("../data/themodel.json")
 	fileReader, err := os.Open(filename)
 	fatal(err)
 	b, err := ioutil.ReadAll(fileReader)
 	fatal(err)
 
-	var tableModels []TableModel
-	json.Unmarshal(b, &tableModels)
+	var themodel Model
+	json.Unmarshal(b, &themodel)
 
-	fmt.Printf("%v", tableModels)
-	return tableModels
+	fmt.Printf("%v", themodel)
+	return themodel
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
@@ -177,12 +185,13 @@ func deleteSideField(tableID int) {
 }
 
 func addTable() int {
-	numTables := len(allTableModels)
+	numTables := len(model.TableModels)
 	//pick a unique ID
 	newTableID := numTables + 1
 	newTableModel := makeNewtableModel(newTableID)
 
-	allTableModels = append(allTableModels, newTableModel)
+	model.TableModels = append(model.TableModels, newTableModel)
+	model.ActiveTableModelID = newTableID
 
 	writeTable(newTableModel, newTableID)
 	return numTables
@@ -191,13 +200,22 @@ func addTable() int {
 func listOfTableNamesAndIDsAsJSONBytes() []byte {
 
 	var namesandids []TableNameAndID
-	for i := range allTableModels {
-		nextEntry := TableNameAndID{allTableModels[i].ID, allTableModels[i].Name}
+	for i := range model.TableModels {
+		nextEntry := TableNameAndID{model.TableModels[i].ID, model.TableModels[i].Name}
 		namesandids = append(namesandids, nextEntry)
 	}
 
 	b, _ := json.MarshalIndent(&namesandids, "", "  ")
 	return b
+}
+
+func getActiveTableID() int {
+	return model.ActiveTableModelID
+}
+func setActiveTableModelID(id int) {
+	model.ActiveTableModelID = id
+
+	writeModelToDisk()
 }
 
 func openTableID(tableID int) io.Reader {
@@ -209,19 +227,21 @@ func openTableID(tableID int) io.Reader {
 }
 
 func writeTable(tableModel TableModel, tableID int) {
-	allTableModels[tableID-1] = tableModel
+	model.TableModels[tableID-1] = tableModel
+	writeModelToDisk()
+}
 
-	filename := fmt.Sprintf("../data/allTableModels.json")
-
-	jsonBytes, _ := json.MarshalIndent(allTableModels, "", "  ")
+func writeModelToDisk() {
+	filename := fmt.Sprintf("../data/themodel.json")
+	jsonBytes, _ := json.MarshalIndent(model, "", "  ")
 	ioutil.WriteFile(filename, jsonBytes, 666)
 }
 
 func getTableModelByID(tableID int) TableModel {
-	return allTableModels[tableID-1]
+	return model.TableModels[tableID-1]
 }
 
 func modelToJSONBytes(tableID int) []byte {
-	contents, _ := json.MarshalIndent(&allTableModels[tableID-1], "", "  ")
+	contents, _ := json.MarshalIndent(&model.TableModels[tableID-1], "", "  ")
 	return contents
 }

@@ -31,6 +31,10 @@ type allTableNamesAndIDsRequest struct {
 	//dont care
 }
 
+type activeTableRequest struct {
+	//dont care
+}
+
 type addTopFieldRequest struct {
 	TableID int `json:"tableId"`
 }
@@ -80,6 +84,7 @@ func main() {
 	router.POST("/api/deletesidefield", deleteSideFieldHandler)
 	router.POST("/api/updatetabledata", updateTableDataHandler)
 	router.POST("/api/addtable", addTableHandler)
+	router.POST("/api/activetable", activeTableRequestHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
@@ -92,6 +97,7 @@ func tableModelHandler(w http.ResponseWriter, r *http.Request, p httprouter.Para
 	req := parseTableModelRequest(r.Body)
 
 	contents := modelToJSONBytes(req.TableID)
+	setActiveTableModelID(req.TableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -263,9 +269,20 @@ func parseRequestCraigslistPageRequestBody(requestBody io.Reader) requestCraigsl
 
 // Handler
 func addTableHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	newTableID := addTable()
 
-	contents := modelToJSONBytes(newTableID)
+	addTable()
+	contents := listOfTableNamesAndIDsAsJSONBytes()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+// Handler
+func activeTableRequestHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	activeTableID := getActiveTableID()
+	contents := modelToJSONBytes(activeTableID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
