@@ -39,6 +39,11 @@ type CellModel struct {
 	LinksAlreadySeen []string
 }
 
+type TableNameAndID struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 func loadTableModelsDataFile() []TableModel {
 
 	filename := fmt.Sprintf("../data/allTableModels.json")
@@ -179,24 +184,13 @@ func addTable() int {
 
 func listOfTableNamesAndIDsAsJSONBytes() []byte {
 
-	type durr struct {
-		ID   int
-		Name string
-	}
-	var namesandids []durr
-	fmt.Print("DUHHH")
+	var namesandids []TableNameAndID
 	for i := range allTableModels {
-		fmt.Printf("DUHHH %s %d", allTableModels[i].Name, allTableModels[i].ID)
-		wtf := durr{allTableModels[i].ID, allTableModels[i].Name}
-
-		fmt.Printf("DUHHH %v ", wtf)
-		namesandids = append(namesandids, wtf)
-		fmt.Printf("WTF %v ", namesandids)
+		nextEntry := TableNameAndID{allTableModels[i].ID, allTableModels[i].Name}
+		namesandids = append(namesandids, nextEntry)
 	}
 
 	b, _ := json.MarshalIndent(&namesandids, "", "  ")
-
-	fmt.Printf("WTF %v ", b)
 	return b
 }
 

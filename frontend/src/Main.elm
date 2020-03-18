@@ -32,7 +32,7 @@ type alias Model =
     { debugBreadcrumb : String
     , currentUrl : String
     , tableModel : TableModel
-    , allTableNamesAndIds : List((Int, String))
+    , allTableNamesAndIds : List(TableNameAndId)
     , craigslistPageHtmlString : String
     , editingFieldInputValue : String
     , editingFieldIndex : Int
@@ -62,6 +62,10 @@ type alias TableModel =
     , rows : List (List (CellViewModel))
     }
 
+type alias TableNameAndId =
+    { name : String
+    , id : Int
+    }
 
 
 -- INIT
@@ -96,7 +100,7 @@ init _ =
 type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
     | ReceivedTableModel  (Result Http.Error TableModel)
-    | ReceivedAllTableNamesAndIds  (Result Http.Error (List ((Int,String))))
+    | ReceivedAllTableNamesAndIds  (Result Http.Error (List (TableNameAndId)))
     | CellClicked CellViewModel
     | SelectTableClicked Int
     | AddTableClicked
@@ -160,8 +164,11 @@ update msg model =
                 Ok names ->
                     ( {model | allTableNamesAndIds = names}, Cmd.none)
 
-                Err _ -> ({model
-                        | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"}
+                Err e -> ({model
+                        | craigslistPageHtmlString = "FAIL: ReceivedAllTableNamesAndIds"
+                                        ++ (httpErrorToString e)
+                        
+                        }
                         , Cmd.none)
 
         SelectTableClicked tableId -> 
@@ -217,6 +224,14 @@ update msg model =
 
 
 
+httpErrorToString : Http.Error -> String
+httpErrorToString e =
+    case e of
+        Http.BadBody s -> s
+        Http.Timeout -> "Timeout"
+        Http.NetworkError -> "Network Error"
+        Http.BadStatus i -> "Bad status"
+        Http.BadUrl s -> s
 
 -- SUBSCRIPTIONS
 
@@ -308,7 +323,7 @@ tableSelectionWidget model =
 tableSelect : Model -> Html Msg
 tableSelect model =
         select [] 
-            (List.indexedMap (\i (id,name) -> option [ onClick <| SelectTableClicked i ] [text name]) model.allTableNamesAndIds)
+            (List.indexedMap (\i tablenameandid -> option [ onClick <| SelectTableClicked tablenameandid.id ] [text tablenameandid.name]) model.allTableNamesAndIds)
 
 constantsLabel : Html msg
 constantsLabel = 
@@ -506,11 +521,11 @@ cellViewModelDecoder =
 
         (Json.Decode.field "hits" Json.Decode.int)
 
-allTableNamesAndIdsDecoder : Decoder (List ((Int,String)))
+allTableNamesAndIdsDecoder : Decoder (List (TableNameAndId))
 allTableNamesAndIdsDecoder =
     (Json.Decode.list tableNameAndIdDecoder)
 
 
-tableNameAndIdDecoder : Decoder (Int,String)
+tableNameAndIdDecoder : Decoder TableNameAndId
 tableNameAndIdDecoder =
-    Json.Decode.map2 (\a b -> (a,b)) (Json.Decode.field "id" Json.Decode.int) (Json.Decode.field "name" Json.Decode.string)
+    Json.Decode.map2 TableNameAndId (Json.Decode.field "name" Json.Decode.string) (Json.Decode.field "id" Json.Decode.int) 
