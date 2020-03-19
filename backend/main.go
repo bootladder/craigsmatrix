@@ -84,6 +84,7 @@ func main() {
 	router.POST("/api/deletesidefield", deleteSideFieldHandler)
 	router.POST("/api/updatetabledata", updateTableDataHandler)
 	router.POST("/api/addtable", addTableHandler)
+	router.POST("/api/deletetable", deleteTableHandler)
 	router.POST("/api/activetable", activeTableRequestHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
@@ -271,6 +272,17 @@ func parseRequestCraigslistPageRequestBody(requestBody io.Reader) requestCraigsl
 func addTableHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	addTable()
+	contents := listOfTableNamesAndIDsAsJSONBytes()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+// Handler
+func deleteTableHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	deleteTable()
 	contents := listOfTableNamesAndIDsAsJSONBytes()
 
 	w.Header().Set("Content-Type", "application/json")

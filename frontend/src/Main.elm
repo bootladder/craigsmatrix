@@ -179,7 +179,7 @@ update msg model =
         AddTableClicked -> (model, 
                     httpAddTable)
 
-        DeleteTableClicked -> (model, Cmd.none)
+        DeleteTableClicked -> (model, httpDeleteTable)
 
         FieldEditorChanged input ->
             ( {model| editingFieldInputValue = input}, Cmd.none)
@@ -263,7 +263,7 @@ pageHeader : Html Msg
 pageHeader =
     div [id "pageHeader"] [ 
         h1 [] [text "CraigslistMatrix."]
-        , h2 [] [text "Take your search to the next dimension.  The second dimension."]
+        , h2 [] [text "Take your search to the next dimension:  The second dimension."]
         ]
 
 renderTable : TableModel -> Html Msg
@@ -313,8 +313,7 @@ renderCellViewModel cellViewModel =
 tableSelectionWidget : Model -> Html Msg
 tableSelectionWidget model =
         div [id "tableNameLabel"]
-            [ text "table name label"
-            , div [] [text "DURRRR"]
+            [ text <| model.tableModel.name
             , tableSelect model
             , button [ onClick AddTableClicked ] [ text "Add New Table"]
             , button [ onClick DeleteTableClicked ] [ text "Delete This Table"]
@@ -485,7 +484,18 @@ httpAddTable =
         , url = "http://localhost:8080/api/addtable"
         , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
         }
-
+ 
+httpDeleteTable : Cmd Msg
+httpDeleteTable =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "nothing", Json.Encode.int 99 )
+                    ]
+        , url = "http://localhost:8080/api/deletetable"
+        , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
+        }
 
 
 httpUpdateTableData : Int -> Cmd Msg

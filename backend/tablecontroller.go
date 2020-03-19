@@ -197,6 +197,21 @@ func addTable() int {
 	return numTables
 }
 
+func deleteTable() {
+
+	var newTableModels []TableModel
+	for i := range model.TableModels {
+		if model.TableModels[i].ID != model.ActiveTableModelID {
+			newTableModels = append(newTableModels, model.TableModels[i])
+		}
+
+	}
+	model.ActiveTableModelID = 1
+
+	model.TableModels = newTableModels
+	writeModelToDisk()
+}
+
 func listOfTableNamesAndIDsAsJSONBytes() []byte {
 
 	var namesandids []TableNameAndID
