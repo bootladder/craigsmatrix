@@ -275,50 +275,6 @@ pageHeader =
         , h2 [] [text "Take your search to the next dimension...  the second dimension."]
         ]
 
-renderTable : TableModel -> Html Msg
-renderTable tableModel =
-    let
-        pairs = List.map2 Tuple.pair tableModel.sideHeadings tableModel.rows
-
-        renderedRows = List.indexedMap 
-                        (\i (heading, cells) -> renderRow i heading cells)
-                        pairs
-    in
-    table [] (
-        [renderTableHeadersRow tableModel.topHeadings]
-        ++
-        renderedRows
-        ++
-        [tr [id "myRow"] [button [onClick TableSideFieldAddClicked] [text "add"]]]
-        ++
-        [tr [id "myRow"] [button [onClick TableSideFieldDeleteClicked] [text "del"]]]
-    )
-
-renderTableHeadersRow : List (String) -> Html Msg
-renderTableHeadersRow headings  =
-    tr [] (
-            [ th [] [button [onClick UpdateTableData] [text "UPDATE"]] ]
-            ++
-            List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i)] [text heading]) headings
-            ++
-            [ th [] [button [onClick TableTopFieldAddClicked] [text "add"]]]
-            ++
-            [ th [] [button [onClick TableTopFieldDeleteClicked] [text "del"]]]
-    )
-
-renderRow : Int -> String -> List (CellViewModel) ->  Html Msg
-renderRow index heading cellViewModels =
-        tr [id "myRow"] ( 
-                th [onClick (TableSideFieldClicked heading index)] [text heading]
-                ::
-                  List.map renderCellViewModel cellViewModels
-            )
-
-renderCellViewModel : CellViewModel -> Html Msg
-renderCellViewModel cellViewModel =
-    td [class "blueCell", onClick (CellClicked cellViewModel)] [text <| String.fromInt cellViewModel.hits]
-
-
 tableSelectionWidget : Model -> Html Msg
 tableSelectionWidget model =
         div [id "tableNameLabel"]
@@ -371,6 +327,50 @@ fieldEditor editorValue =
                 ] []
         , button [ onClick FieldEditorSubmit ] [text "Submit"]
         ]
+
+renderTable : TableModel -> Html Msg
+renderTable tableModel =
+    let
+        pairs = List.map2 Tuple.pair tableModel.sideHeadings tableModel.rows
+
+        renderedRows = List.indexedMap 
+                        (\i (heading, cells) -> renderRow i heading cells)
+                        pairs
+    in
+    table [] (
+        [renderTableHeadersRow tableModel.topHeadings]
+        ++
+        renderedRows
+        ++
+        [tr [id "myRow"] [button [onClick TableSideFieldAddClicked] [text "add"]]]
+        ++
+        [tr [id "myRow"] [button [onClick TableSideFieldDeleteClicked] [text "del"]]]
+    )
+
+renderTableHeadersRow : List (String) -> Html Msg
+renderTableHeadersRow headings  =
+    tr [] (
+            [ th [] [button [onClick UpdateTableData] [text "UPDATE"]] ]
+            ++
+            List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i)] [text heading]) headings
+            ++
+            [ th [] [button [onClick TableTopFieldAddClicked] [text "add"]]]
+            ++
+            [ th [] [button [onClick TableTopFieldDeleteClicked] [text "del"]]]
+    )
+
+renderRow : Int -> String -> List (CellViewModel) ->  Html Msg
+renderRow index heading cellViewModels =
+        tr [id "myRow"] ( 
+                th [onClick (TableSideFieldClicked heading index)] [text heading]
+                ::
+                  List.map renderCellViewModel cellViewModels
+            )
+
+renderCellViewModel : CellViewModel -> Html Msg
+renderCellViewModel cellViewModel =
+    td [class "blueCell", onClick (CellClicked cellViewModel)] [text <| String.fromInt cellViewModel.hits]
+
 
 craigslistSearchPage : String -> Html msg
 craigslistSearchPage html =
