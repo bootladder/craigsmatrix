@@ -295,15 +295,20 @@ pageHeader =
 
 tableSelectionWidget : Model -> Html Msg
 tableSelectionWidget model =
-        div [id "tableNameLabel"]
-            [ text <| model.tableModel.name
-            , tableSelect model
-            , button [ onClick AddTableClicked ] [ text "Add New Table"]
-            , button [ onClick DeleteTableClicked ] [ text "Delete This Table"]
-            , input [ onInput TableNameEditorChanged
-                , Html.Attributes.value model.tableNameEditorValue 
-                , placeholder "Update Table Name"] []
-            , button [ onClick <| UpdateTableNameClicked] [ text "Update Table Name"]
+        div [id "tableSelectionWidget"]
+            [ div [id "left"] [ div [id "tableNameLabel"] [text <| model.tableModel.name]
+                              , div [id "tableSelect"] [tableSelect model]
+                              ]
+            , div [id "right"] [ 
+                div [id "tableSelectionButtons"] [
+                    button [ id "btnAddTable", onClick AddTableClicked ] [ text "Add New Table"]
+                    ,button [ id "btnDeleteTable", onClick DeleteTableClicked ] [ text "Delete This Table"]
+                    ,button [ onClick <| UpdateTableNameClicked] [ text "Update Table Name"]
+                    , input [ onInput TableNameEditorChanged
+                        , Html.Attributes.value model.tableNameEditorValue 
+                        , placeholder "Update Table Name"] []
+                    ]
+            ]
             ]
 
 tableSelect : Model -> Html Msg
