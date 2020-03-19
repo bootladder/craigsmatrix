@@ -37,6 +37,7 @@ type alias Model =
     , editingFieldInputValue : String
     , editingFieldIndex : Int
     , editingFieldType : FieldType
+    , tableNameEditorValue : String
     }
 
 type FieldType = TopField | SideField
@@ -89,6 +90,7 @@ init _ =
         ""
         0
         TopField
+        ""
     , Cmd.batch [(httpRequestActiveTableModel), httpRequestAllTableNamesAndIds]
     )
 
@@ -105,6 +107,8 @@ type Msg
     | SelectTableClicked Int
     | AddTableClicked
     | DeleteTableClicked
+    | UpdateTableNameClicked
+    | TableNameEditorChanged String
     | FieldEditorChanged String
     | FieldEditorSubmit
     | TableTopFieldClicked String Int
@@ -180,6 +184,11 @@ update msg model =
                     httpAddTable)
 
         DeleteTableClicked -> (model, httpDeleteTable)
+
+        UpdateTableNameClicked -> (model, httpUpdateTableName <| model.tableNameEditorValue)
+
+        TableNameEditorChanged input -> 
+            ( {model| tableNameEditorValue = input}, Cmd.none)
 
         FieldEditorChanged input ->
             ( {model| editingFieldInputValue = input}, Cmd.none)
@@ -263,7 +272,7 @@ pageHeader : Html Msg
 pageHeader =
     div [id "pageHeader"] [ 
         h1 [] [text "CraigslistMatrix."]
-        , h2 [] [text "Take your search to the next dimension:  The second dimension."]
+        , h2 [] [text "Take your search to the next dimension...  the second dimension."]
         ]
 
 renderTable : TableModel -> Html Msg
@@ -317,8 +326,10 @@ tableSelectionWidget model =
             , tableSelect model
             , button [ onClick AddTableClicked ] [ text "Add New Table"]
             , button [ onClick DeleteTableClicked ] [ text "Delete This Table"]
-            , input [ ] []
-            , button [] [ text "Update Table Name"]
+            , input [ onInput TableNameEditorChanged
+                , Html.Attributes.value model.tableNameEditorValue 
+                , placeholder "Update Table Name"] []
+            , button [ onClick <| UpdateTableNameClicked] [ text "Update Table Name"]
             ]
 
 tableSelect : Model -> Html Msg
@@ -522,6 +533,18 @@ httpRequestActiveTableModel =
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 
+
+httpUpdateTableName : String -> Cmd Msg
+httpUpdateTableName name =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "name", Json.Encode.string name )
+                    ]
+        , url = "http://localhost:8080/api/updatetablename"
+        , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
+        }
 
 -- DECODER
 

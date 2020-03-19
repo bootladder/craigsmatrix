@@ -55,6 +55,10 @@ type updateTableDataRequest struct {
 	TableID int `json:"tableId"`
 }
 
+type updateTableNameRequest struct {
+	Name string `json:"name"`
+}
+
 type fieldEditRequest struct {
 	TableID    int    `json:"tableId"`
 	FieldIndex int    `json:"fieldIndex"`
@@ -86,6 +90,7 @@ func main() {
 	router.POST("/api/addtable", addTableHandler)
 	router.POST("/api/deletetable", deleteTableHandler)
 	router.POST("/api/activetable", activeTableRequestHandler)
+	router.POST("/api/updatetablename", updateTableNameHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
@@ -217,6 +222,25 @@ func deleteSideFieldHandler(w http.ResponseWriter, r *http.Request, p httprouter
 
 func parseDeleteSideFieldRequestBody(requestBody io.Reader) deleteSideFieldRequest {
 	var req deleteSideFieldRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+// Handler
+func updateTableNameHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseUpdateTableNameRequestBody(r.Body)
+	updateTableName(req.Name)
+
+	contents := listOfTableNamesAndIDsAsJSONBytes()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(contents)
+}
+
+func parseUpdateTableNameRequestBody(requestBody io.Reader) updateTableNameRequest {
+	var req updateTableNameRequest
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 	return req

@@ -212,6 +212,13 @@ func deleteTable() {
 	writeModelToDisk()
 }
 
+func updateTableName(newname string) {
+
+	tableModel := getTableModelByID(model.ActiveTableModelID)
+	tableModel.Name = newname
+	writeTable(tableModel, model.ActiveTableModelID)
+}
+
 func listOfTableNamesAndIDsAsJSONBytes() []byte {
 
 	var namesandids []TableNameAndID
