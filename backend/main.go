@@ -59,6 +59,10 @@ type updateTableNameRequest struct {
 	Name string `json:"name"`
 }
 
+type updateCategoryRequest struct {
+	Category string `json:"category"`
+}
+
 type fieldEditRequest struct {
 	TableID    int    `json:"tableId"`
 	FieldIndex int    `json:"fieldIndex"`
@@ -91,6 +95,7 @@ func main() {
 	router.POST("/api/deletetable", deleteTableHandler)
 	router.POST("/api/activetable", activeTableRequestHandler)
 	router.POST("/api/updatetablename", updateTableNameHandler)
+	router.POST("/api/updatecategory", updateCategoryHandler)
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
@@ -260,6 +265,22 @@ func updateTableDataHandler(w http.ResponseWriter, r *http.Request, p httprouter
 
 func parseUpdateTableDataRequestBody(requestBody io.Reader) updateTableDataRequest {
 	var req updateTableDataRequest
+	err := json.NewDecoder(requestBody).Decode(&req)
+	fatal(err)
+	return req
+}
+
+func updateCategoryHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	req := parseUpdateCategoryRequestBody(r.Body)
+	updateTableCategory(req.Category)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("DONT CARE"))
+}
+
+func parseUpdateCategoryRequestBody(requestBody io.Reader) updateCategoryRequest {
+	var req updateCategoryRequest
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 	return req

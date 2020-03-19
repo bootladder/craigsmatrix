@@ -103,6 +103,7 @@ type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
     | ReceivedTableModel  (Result Http.Error TableModel)
     | ReceivedAllTableNamesAndIds  (Result Http.Error (List (TableNameAndId)))
+    | NOOPHTTPResult (Result Http.Error ())
     | CellClicked CellViewModel
     | SelectTableClicked Int
     | AddTableClicked
@@ -118,6 +119,7 @@ type Msg
     | TableSideFieldAddClicked
     | TableSideFieldDeleteClicked
     | UpdateTableData
+    | SelectCategoryClicked String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -167,6 +169,19 @@ update msg model =
             case result of
                 Ok names ->
                     ( {model | allTableNamesAndIds = names}, httpRequestActiveTableModel)
+
+                Err e -> ({model
+                        | craigslistPageHtmlString = "FAIL: ReceivedAllTableNamesAndIds"
+                                        ++ (httpErrorToString e)
+                        
+                        }
+                        , Cmd.none)
+
+
+        NOOPHTTPResult  result ->
+            case result of
+                Ok _ ->
+                    ( model, Cmd.none)
 
                 Err e -> ({model
                         | craigslistPageHtmlString = "FAIL: ReceivedAllTableNamesAndIds"
@@ -232,6 +247,9 @@ update msg model =
 
         UpdateTableData ->
             ( model, httpUpdateTableData model.tableModel.id)
+
+        SelectCategoryClicked category -> 
+            (model, httpUpdateCategory category)
 
 
 
@@ -300,20 +318,26 @@ tableSelect model =
             ) 
             model.allTableNamesAndIds)
 
-constantsLabel : Html msg
+constantsLabel : Html Msg
 constantsLabel = 
         div [id "constantsLabel"] 
-            [ text "constants label" 
-            , select [] [
-                  option [] [text "community"]
-                , option [] [text "events"]
-                , option [] [text "for sale"]
-                , option [] [text "gigs"]
-                , option [] [text "housing"]
-                , option [] [text "jobs"]
-                , option [] [text "resumes"]
-                , option [] [text "services"]
+            [ text "category label" 
+            , select [] (
+
+                List.map (\category -> option [ onClick <| SelectCategoryClicked category] [text category])
+                [
+                "community"
+                ,"events"
+                ,"for sale"
+                ,"gigs"
+                ,"housing"
+                ,"jobs"
+                ,"resumes"
+                ,"services"
                 ]
+                  
+            )
+
             ]
 
 
@@ -545,6 +569,21 @@ httpUpdateTableName name =
         , url = "http://localhost:8080/api/updatetablename"
         , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
         }
+
+
+
+httpUpdateCategory : String -> Cmd Msg
+httpUpdateCategory category =
+    Http.post
+        { body =
+            Http.jsonBody <|
+                Json.Encode.object
+                    [ ( "category", Json.Encode.string category )
+                    ]
+        , url = "http://localhost:8080/api/updatecategory"
+        , expect = Http.expectWhatever NOOPHTTPResult
+        }
+
 
 -- DECODER
 

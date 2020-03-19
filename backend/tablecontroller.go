@@ -22,6 +22,7 @@ type Model struct {
 type TableModel struct {
 	Name         string        `json:"name"`
 	ID           int           `json:"id"`
+	Category     string        `json:"category"`
 	TopHeadings  []string      `json:"topHeadings"`
 	SideHeadings []string      `json:"sideHeadings"`
 	Rows         [][]CellModel `json:"rows"`
@@ -216,6 +217,13 @@ func updateTableName(newname string) {
 
 	tableModel := getTableModelByID(model.ActiveTableModelID)
 	tableModel.Name = newname
+	writeTable(tableModel, model.ActiveTableModelID)
+}
+
+func updateTableCategory(category string) {
+
+	tableModel := getTableModelByID(model.ActiveTableModelID)
+	tableModel.Category = category
 	writeTable(tableModel, model.ActiveTableModelID)
 }
 
