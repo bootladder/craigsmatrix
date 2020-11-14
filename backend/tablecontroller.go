@@ -6,8 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-
-	"github.com/mmcdole/gofeed"
+	//"github.com/mmcdole/gofeed"
 )
 
 var model = loadModelDataFile()
@@ -64,7 +63,7 @@ func loadModelDataFile() Model {
 	var themodel Model
 	json.Unmarshal(b, &themodel)
 
-	fmt.Printf("%v", themodel)
+	fmt.Printf("The model is: %v", themodel)
 	return themodel
 }
 
@@ -103,22 +102,20 @@ func makeCraigslistPageURL(side, top string) string {
 
 func updateTableData(tableID int) {
 
-	fp := gofeed.NewParser()
-
 	tableModel := getTableModelByID(tableID)
 
 	for i := range tableModel.Rows {
 		for j := range tableModel.Rows[i] {
-			feedURL := tableModel.Rows[i][j].FeedURL
 
-			feed, _ := fp.ParseURL(feedURL)
-			//fmt.Println(feed.Title)
-			fmt.Printf("There are %d items\n", len(feed.Items))
+			searchUrl := tableModel.Rows[i][j].PageURL
+
+			results := getResultsFromCraigslistUrl(searchUrl)
+			fmt.Printf("There are %d search results\n", len(results))
 
 			var numberOfUnseenLinks = 0
-			for _, item := range feed.Items {
+			for _, item := range results {
 				fmt.Print(item.Title)
-				if false == sliceContains(tableModel.Rows[i][j].LinksAlreadySeen, item.Link) {
+				if false == sliceContains(tableModel.Rows[i][j].LinksAlreadySeen, item.Url) {
 					numberOfUnseenLinks++
 				}
 			}
@@ -126,9 +123,9 @@ func updateTableData(tableID int) {
 
 			tableModel.Rows[i][j].Hits = numberOfUnseenLinks
 
-			tableModel.Rows[i][j].LinksAlreadySeen = make([]string, len(feed.Items))
-			for z, item := range feed.Items {
-				tableModel.Rows[i][j].LinksAlreadySeen[z] = item.Link
+			tableModel.Rows[i][j].LinksAlreadySeen = make([]string, len(results))
+			for z, item := range results {
+				tableModel.Rows[i][j].LinksAlreadySeen[z] = item.Url
 			}
 
 		}

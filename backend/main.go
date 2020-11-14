@@ -254,6 +254,8 @@ func parseUpdateTableNameRequestBody(requestBody io.Reader) updateTableNameReque
 // Handler
 func updateTableDataHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	req := parseUpdateTableDataRequestBody(r.Body)
+
+	fmt.Printf("updateTableDataHandler: TableID: %v\n", req.TableID)
 	updateTableData(req.TableID)
 
 	contents := modelToJSONBytes(req.TableID)
