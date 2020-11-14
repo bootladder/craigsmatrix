@@ -279,7 +279,7 @@ view model =
     div [id "container"] 
     [ pageHeader
     , tableSelectionWidget model
-    , constantsLabel
+    , categoryLabel
     , fieldEditor model.editingFieldInputValue
     , div [id "myTable"] [renderTable model.tableModel]
     , div [id "urlView"] [text model.currentUrl]
@@ -323,10 +323,10 @@ tableSelect model =
             ) 
             model.allTableNamesAndIds)
 
-constantsLabel : Html Msg
-constantsLabel = 
-        div [id "constantsLabel"] 
-            [ text "category label" 
+categoryLabel : Html Msg
+categoryLabel = 
+        div [id "categoryLabel"] 
+            [ span [] [text "Category"]
             , select [] (
 
                 List.map (\category -> option [ onClick <| SelectCategoryClicked category] [text category])
@@ -349,7 +349,7 @@ constantsLabel =
 fieldEditor : String -> Html Msg
 fieldEditor editorValue =
         div [id "fieldEditor"] 
-        [ text "Field Editor" 
+        [ span [] [text "Field Editor" ]
         , input [ onInput FieldEditorChanged
                 , Html.Attributes.value editorValue 
                 , placeholder "Click a row or column header"
