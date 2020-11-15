@@ -83,8 +83,8 @@ func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) 
 		tableModel.Rows[i] = make([]CellModel, len(tableModel.TopHeadings))
 
 		for j := range tableModel.Rows[i] {
-			tableModel.Rows[i][j].FeedURL = makeCraigslistFeedURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
-			tableModel.Rows[i][j].PageURL = makeCraigslistPageURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j])
+			tableModel.Rows[i][j].PageURL =
+				makeCraigslistPageURL(tableModel.SideHeadings[i], tableModel.TopHeadings[j], tableModel.Category)
 			tableModel.Rows[i][j].Hits = -1
 		}
 	}
@@ -92,12 +92,13 @@ func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) 
 	writeTable(tableModel, tableID)
 }
 
-func makeCraigslistFeedURL(side, top string) string {
-	return "https://" + top + ".craigslist.org/search/jjj?format=rss&query=" + side
+var categoryCodes = map[string]string{
+	"for sale": "sss",
+	"jobs":     "jjj",
 }
 
-func makeCraigslistPageURL(side, top string) string {
-	return "https://" + top + ".craigslist.org/search/jjj?query=" + side
+func makeCraigslistPageURL(side, top, category string) string {
+	return "https://" + top + ".craigslist.org/search/" + categoryCodes[category] + "?query=" + side
 }
 
 func updateTableData(tableID int) {
