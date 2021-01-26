@@ -343,6 +343,8 @@ func deleteTableHandler(w http.ResponseWriter, r *http.Request, p httprouter.Par
 func activeTableRequestHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	activeTableID := getActiveTableID()
+
+	fmt.Printf("ACTIVE TABVLEID IS : %d", activeTableID)
 	contents := modelToJSONBytes(activeTableID)
 
 	w.Header().Set("Content-Type", "application/json")

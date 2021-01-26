@@ -21,6 +21,7 @@ type Model struct {
 func makeNewModel() Model {
 	model := Model{}
 	model.TableModels = []TableModel{}
+	model.TableModels = append(model.TableModels, makeNewtableModel(0))
 	return model
 }
 
@@ -64,11 +65,15 @@ type TableNameAndID struct {
 
 func loadModelDataFile() Model {
 
-	// create one if it doesnt exist
 	filename := fmt.Sprintf(defaultmodelpath)
 	fileReader, err := os.Open(filename)
+
 	if err != nil {
+		//create new model, set the model and write to disk
 		fmt.Printf("Not found. Creating a  new one " + defaultmodelpath)
+		fileReader, err = os.Create(defaultmodelpath)
+		model = makeNewModel()
+		writeModelToDisk()
 	}
 	b, err := ioutil.ReadAll(fileReader)
 	fatal(err)
@@ -283,6 +288,6 @@ func getTableModelByID(tableID int) TableModel {
 }
 
 func modelToJSONBytes(tableID int) []byte {
-	contents, _ := json.MarshalIndent(&model.TableModels[tableID-1], "", "  ")
+	contents, _ := json.MarshalIndent(&model.TableModels[tableID], "", "  ")
 	return contents
 }
