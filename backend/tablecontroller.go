@@ -9,7 +9,8 @@ import (
 	//"github.com/mmcdole/gofeed"
 )
 
-var model = loadModelDataFile()
+var defaultmodelpath = "../data/themodel.json"
+var model Model // = loadModelDataFile()
 
 // Model is the model for everything
 type Model struct {
@@ -54,9 +55,11 @@ type TableNameAndID struct {
 func loadModelDataFile() Model {
 
 	// create one if it doesnt exist
-	filename := fmt.Sprintf("../data/themodel.json")
+	filename := fmt.Sprintf(defaultmodelpath)
 	fileReader, err := os.Open(filename)
-	fatal(err)
+	if err != nil {
+		fmt.Printf("Not found. Creating a  new one " + defaultmodelpath)
+	}
 	b, err := ioutil.ReadAll(fileReader)
 	fatal(err)
 
