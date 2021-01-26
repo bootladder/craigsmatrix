@@ -3,16 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 )
 
-func TestHello(t *testing.T) {
-	var model Model = Model{}
-	model.TableModels = make([]TableModel, 1)
-	model.TableModels[0].TopHeadings = make([]string, 0)
-	model.TableModels[0].SideHeadings = make([]string, 0)
-	model.TableModels[0].Rows = make([][]CellModel, 0)
+func Test_makeNewModel(t *testing.T) {
+	model := makeNewModel()
 	jsonBytes, _ := json.MarshalIndent(model, "", "  ")
-	fmt.Printf("%v", string(jsonBytes))
-	t.Fatalf("blah")
+	jsonStr := string(jsonBytes)
+	if strings.Contains(jsonStr, "null") {
+		fmt.Printf("%v", string(jsonBytes))
+		t.Fatalf("JSON of new model should NOT contain null")
+	}
 }

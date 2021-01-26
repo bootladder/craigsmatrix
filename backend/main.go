@@ -79,6 +79,8 @@ type requestCraigslistPageResponse struct {
 
 func main() {
 
+	setModel(loadModelDataFile())
+
 	router := httprouter.New()
 	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
 

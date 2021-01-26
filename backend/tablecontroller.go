@@ -18,6 +18,16 @@ type Model struct {
 	TableModels        []TableModel `json:"tablemodels"`
 }
 
+func makeNewModel() Model {
+	model := Model{}
+	model.TableModels = []TableModel{}
+	return model
+}
+
+func setModel(m Model) {
+	model = m
+}
+
 // TableModel stores everything in a table
 type TableModel struct {
 	Name         string        `json:"name"`
