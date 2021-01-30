@@ -12,56 +12,16 @@ import (
 var defaultmodelpath = "../data/themodel.json"
 var model Model // = loadModelDataFile()
 
-// Model is the model for everything
-type Model struct {
-	ActiveTableModelID int          `json:"activetablemodelid"`
-	TableModels        []TableModel `json:"tablemodels"`
-}
-
-func makeNewModel() Model {
-	model := Model{}
-	model.TableModels = []TableModel{}
-	model.TableModels = append(model.TableModels, makeNewtableModel(0))
-	return model
-}
+var modelWriter ModelWriter
 
 func setModel(m Model) {
 	model = m
 }
 
-// TableModel stores everything in a table
-type TableModel struct {
-	Name         string        `json:"name"`
-	ID           int           `json:"id"`
-	Category     string        `json:"category"`
-	TopHeadings  []string      `json:"topHeadings"`
-	SideHeadings []string      `json:"sideHeadings"`
-	Rows         [][]CellModel `json:"rows"`
+func setModelWriter(m ModelWriter) {
+	modelWriter = m
 }
 
-func makeNewtableModel(id int) TableModel {
-	tm := TableModel{}
-	tm.Name = fmt.Sprintf("New Table id %d ", id)
-	tm.ID = id
-	tm.TopHeadings = []string{"TopHeading"}
-	tm.SideHeadings = []string{"SideHeading"}
-	tm.Rows = [][]CellModel{}
-	return tm
-}
-
-//CellModel models a RSS feed
-type CellModel struct {
-	FeedURL          string `json:"feedUrl"`
-	PageURL          string `json:"pageUrl"`
-	Hits             int    `json:"hits"`
-	LinksAlreadySeen []string
-}
-
-// TableNameAndID  is used so the frontend can populate the dropdown
-type TableNameAndID struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
 
 func loadModelDataFile() Model {
 
@@ -210,7 +170,7 @@ func addTable() int {
 	model.TableModels = append(model.TableModels, newTableModel)
 	model.ActiveTableModelID = newTableID
 
-	writeTable(newTableModel, newTableID)
+	//writeTable(newTableModel, newTableID)
 	return numTables
 }
 
@@ -273,8 +233,8 @@ func openTableID(tableID int) io.Reader {
 }
 
 func writeTable(tableModel TableModel, tableID int) {
-	model.TableModels[tableID-1] = tableModel
-	writeModelToDisk()
+	model.TableModels[tableID] = tableModel
+	modelWriter.writeModelToDisk()
 }
 
 func writeModelToDisk() {
@@ -284,7 +244,7 @@ func writeModelToDisk() {
 }
 
 func getTableModelByID(tableID int) TableModel {
-	return model.TableModels[tableID-1]
+	return model.TableModels[tableID]
 }
 
 func modelToJSONBytes(tableID int) []byte {

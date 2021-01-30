@@ -37,3 +37,14 @@ func printModel(model Model) {
 	jsonStr := string(jsonBytes)
 	fmt.Printf("%v", jsonStr)
 }
+
+
+
+func Test_addTable_5times_allhavedifferentids(t *testing.T) {
+	addTable()
+	addTable()
+	addTable()
+	addTable()
+	addTable()
+
+}
