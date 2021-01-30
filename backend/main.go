@@ -79,6 +79,7 @@ type requestCraigslistPageResponse struct {
 
 func main() {
 
+	setModelDiskWriter(RealModelDiskWriter{})
 	setModel(loadModelDataFile())
 
 	router := httprouter.New()

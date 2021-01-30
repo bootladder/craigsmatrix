@@ -12,14 +12,14 @@ import (
 var defaultmodelpath = "../data/themodel.json"
 var model Model // = loadModelDataFile()
 
-var modelWriter ModelWriter
+var modelDiskWriter ModelDiskWriter
 
 func setModel(m Model) {
 	model = m
 }
 
-func setModelWriter(m ModelWriter) {
-	modelWriter = m
+func setModelDiskWriter(m ModelDiskWriter) {
+	modelDiskWriter = m
 }
 
 
@@ -170,7 +170,7 @@ func addTable() int {
 	model.TableModels = append(model.TableModels, newTableModel)
 	model.ActiveTableModelID = newTableID
 
-	//writeTable(newTableModel, newTableID)
+	modelDiskWriter.writeModelToDisk()
 	return numTables
 }
 
@@ -234,7 +234,7 @@ func openTableID(tableID int) io.Reader {
 
 func writeTable(tableModel TableModel, tableID int) {
 	model.TableModels[tableID] = tableModel
-	modelWriter.writeModelToDisk()
+	modelDiskWriter.writeModelToDisk()
 }
 
 func writeModelToDisk() {
