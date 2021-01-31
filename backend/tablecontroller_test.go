@@ -122,3 +122,27 @@ func Test_addTable_writesModelToDisk(t * testing.T) {
 		t.Fatalf("addTable() did not write to disk")
 	}
 }
+
+
+func Test_addTable_then_getActiveTableID_modelToJSONBytes_isCorrectModel(t * testing.T) {
+	setModel(Model{})
+
+	mockModelDiskWriter := MockModelDiskWriter{}
+	setModelDiskWriter(&mockModelDiskWriter)
+
+
+	//fmt.Printf("The whole model is %v", model)
+	addTable()
+	id := getActiveTableID()
+
+	//fmt.Printf("the id is %d \n", id)
+
+	//fmt.Printf("The whole model is %v", model)
+
+
+	_ = modelToJSONBytes(id)
+
+	//s := string(contents)
+
+	//fmt.Printf("The model is  %s\n", s)
+}

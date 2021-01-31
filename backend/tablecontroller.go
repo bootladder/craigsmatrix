@@ -46,7 +46,7 @@ func loadModelDataFile() Model {
 }
 
 func editTableModelField(tableID, fieldIndex int, fieldValue, fieldType string) {
-	tableModel := getTableModelByID(tableID)
+	tableModel := model.getTableModelByID(tableID)
 
 	if fieldType == "top" {
 		tableModel.TopHeadings[fieldIndex] = fieldValue
@@ -81,7 +81,7 @@ func makeCraigslistPageURL(side, top, category string) string {
 
 func updateTableData(tableID int) {
 
-	tableModel := getTableModelByID(tableID)
+	tableModel := model.getTableModelByID(tableID)
 
 	for i := range tableModel.Rows {
 		for j := range tableModel.Rows[i] {
@@ -125,13 +125,13 @@ func sliceContains(slice []string, elem string) bool {
 func addTopField(tableID int) {
 
 	// TODO: populate table model rows
-	tableModel := getTableModelByID(tableID)
+	tableModel := model.getTableModelByID(tableID)
 	tableModel.TopHeadings = append(tableModel.TopHeadings, "new field")
 	writeTable(tableModel, tableID)
 }
 
 func addSideField(tableID int) {
-	tableModel := getTableModelByID(tableID)
+	tableModel := model.getTableModelByID(tableID)
 	tableModel.SideHeadings = append(tableModel.SideHeadings, "new field")
 	tableModel.Rows =
 		append(tableModel.Rows, make([]CellModel, len(tableModel.TopHeadings)))
@@ -140,7 +140,7 @@ func addSideField(tableID int) {
 }
 
 func deleteTopField(tableID int) {
-	tableModel := getTableModelByID(tableID)
+	tableModel := model.getTableModelByID(tableID)
 	tableModel.TopHeadings = tableModel.TopHeadings[:len(tableModel.TopHeadings)-1]
 
 	//keep the rows in sync by slicing to length of top headers
@@ -152,7 +152,7 @@ func deleteTopField(tableID int) {
 }
 
 func deleteSideField(tableID int) {
-	tableModel := getTableModelByID(tableID)
+	tableModel := model.getTableModelByID(tableID)
 
 	// keep the rows and the side headings in sync
 	tableModel.SideHeadings = tableModel.SideHeadings[:len(tableModel.SideHeadings)-1]
@@ -191,14 +191,14 @@ func deleteTable() {
 
 func updateTableName(newname string) {
 
-	tableModel := getTableModelByID(model.ActiveTableModelID)
+	tableModel := model.getActiveTableModel()
 	tableModel.Name = newname
 	writeTable(tableModel, model.ActiveTableModelID)
 }
 
 func updateTableCategory(category string) {
 
-	tableModel := getTableModelByID(model.ActiveTableModelID)
+	tableModel := model.getActiveTableModel()
 	tableModel.Category = category
 	writeTable(tableModel, model.ActiveTableModelID)
 }
@@ -243,11 +243,8 @@ func writeModelToDisk() {
 	ioutil.WriteFile(filename, jsonBytes, 666)
 }
 
-func getTableModelByID(tableID int) TableModel {
-	return model.TableModels[tableID]
-}
-
 func modelToJSONBytes(tableID int) []byte {
-	contents, _ := json.MarshalIndent(&model.TableModels[tableID], "", "  ")
+	activeTableModel := model.getActiveTableModel()
+	contents, _ := json.MarshalIndent(activeTableModel, "", "  ")
 	return contents
 }

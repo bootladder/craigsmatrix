@@ -18,6 +18,26 @@ func makeNewModel() Model {
 	return model
 }
 
+func (m Model) getActiveTableModel() TableModel {
+	for _, tableModel := range(m.TableModels) {
+
+		if tableModel.ID == m.ActiveTableModelID  {
+			return tableModel
+		}
+	}
+	panic("getActiveTableModel could not find the TableModel")
+}
+
+func (m Model) getTableModelByID(id int) TableModel{
+	for _, tableModel := range(m.TableModels) {
+
+		if tableModel.ID == id  {
+			return tableModel
+		}
+	}
+	panic("getTableModelByID could not find the TableModel")
+}
+
 // TableModel stores everything in a table
 type TableModel struct {
 	Name         string        `json:"name"`
