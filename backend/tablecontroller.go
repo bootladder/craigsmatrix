@@ -233,7 +233,12 @@ func openTableID(tableID int) io.Reader {
 }
 
 func writeTable(tableModel TableModel, tableID int) {
-	model.TableModels[tableID] = tableModel
+	for id,tm := range(model.TableModels) {
+		if tm.ID == tableID {
+			model.TableModels[id] = tableModel
+		}
+	}
+
 	modelDiskWriter.writeModelToDisk()
 }
 
@@ -244,7 +249,7 @@ func writeModelToDisk() {
 }
 
 func modelToJSONBytes(tableID int) []byte {
-	activeTableModel := model.getActiveTableModel()
-	contents, _ := json.MarshalIndent(activeTableModel, "", "  ")
+	tableModel := model.getTableModelByID(tableID)
+	contents, _ := json.MarshalIndent(tableModel, "", "  ")
 	return contents
 }

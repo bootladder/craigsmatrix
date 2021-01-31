@@ -16,6 +16,15 @@ func (m*  MockModelDiskWriter)  writeModelToDisk() {
 	m.isCalled = true
 }
 
+var mockModelDiskWriter MockModelDiskWriter
+
+func clearModel_andSetMockModelDiskWriter() {
+	setModel(Model{})
+
+	mockModelDiskWriter = MockModelDiskWriter{}
+	setModelDiskWriter(&mockModelDiskWriter)
+}
+
 
 
 func Test_makeNewModel_does_not_have_null_json(t *testing.T) {
@@ -57,9 +66,7 @@ func Test_initialmodel_printModel(t *testing.T){
 
 
 func Test_addTable_5times_allhavedifferentids(t *testing.T) {
-	setModel(Model{})  // cleanup state
-	mockModelDiskWriter := MockModelDiskWriter{}
-	setModelDiskWriter(&mockModelDiskWriter)
+	clearModel_andSetMockModelDiskWriter()
 
 	addTable()
 	addTable()
@@ -109,12 +116,8 @@ func occurrencesOf(id int, ids []int) int {
 }
 
 
-
 func Test_addTable_writesModelToDisk(t * testing.T) {
-	setModel(Model{})
-
-	mockModelDiskWriter := MockModelDiskWriter{}
-	setModelDiskWriter(&mockModelDiskWriter)
+	clearModel_andSetMockModelDiskWriter()
 
 	addTable()
 
@@ -125,11 +128,7 @@ func Test_addTable_writesModelToDisk(t * testing.T) {
 
 
 func Test_addTable_then_getActiveTableID_modelToJSONBytes_isCorrectModel(t * testing.T) {
-	setModel(Model{})
-
-	mockModelDiskWriter := MockModelDiskWriter{}
-	setModelDiskWriter(&mockModelDiskWriter)
-
+	clearModel_andSetMockModelDiskWriter()
 
 	//fmt.Printf("The whole model is %v", model)
 	addTable()
@@ -145,4 +144,40 @@ func Test_addTable_then_getActiveTableID_modelToJSONBytes_isCorrectModel(t * tes
 	//s := string(contents)
 
 	//fmt.Printf("The model is  %s\n", s)
+}
+
+
+
+func Test_writeTable_idsoutoforder_stillworks(t * testing.T){
+	clearModel_andSetMockModelDiskWriter()
+
+	tableModel := TableModel{}
+
+	addTable()
+	addTable()
+
+	// mess up  the ids
+	model.TableModels[0].ID = 5
+
+
+	writeTable(tableModel, 5)
+
+}
+
+
+func Test_modelToJSONBytes_takesId(t * testing.T){
+	clearModel_andSetMockModelDiskWriter()
+
+	addTable()
+	addTable()
+	addTable()
+
+	bytes := modelToJSONBytes(2)
+	s := string(bytes)
+	//fmt.Printf("%v", model)
+
+	if false == strings.Contains(s, "2"){
+		t.Fatalf("The model should have 2, ie. id 2")
+	}
+
 }
