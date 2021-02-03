@@ -33,7 +33,7 @@ func loadModelDataFile() Model {
 		fmt.Printf("Not found. Creating a  new one " + defaultmodelpath)
 		fileReader, err = os.Create(defaultmodelpath)
 		model = makeNewModel()
-		writeModelToDisk()
+		modelDiskWriter.writeModelToDisk()
 	}
 	b, err := ioutil.ReadAll(fileReader)
 	fatal(err)
@@ -186,7 +186,7 @@ func deleteTable() {
 	model.ActiveTableModelID = 1
 
 	model.TableModels = newTableModels
-	writeModelToDisk()
+	modelDiskWriter.writeModelToDisk()
 }
 
 func updateTableName(newname string) {
@@ -221,7 +221,7 @@ func getActiveTableID() int {
 func setActiveTableModelID(id int) {
 	model.ActiveTableModelID = id
 
-	writeModelToDisk()
+	modelDiskWriter.writeModelToDisk()
 }
 
 func openTableID(tableID int) io.Reader {
@@ -242,11 +242,6 @@ func writeTable(tableModel TableModel, tableID int) {
 	modelDiskWriter.writeModelToDisk()
 }
 
-func writeModelToDisk() {
-	filename := fmt.Sprintf("../data/themodel.json")
-	jsonBytes, _ := json.MarshalIndent(model, "", "  ")
-	ioutil.WriteFile(filename, jsonBytes, 666)
-}
 
 func modelToJSONBytes(tableID int) []byte {
 	tableModel := model.getTableModelByID(tableID)
