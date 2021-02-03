@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
+	//"net/url"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/pkg/errors"
@@ -304,8 +304,9 @@ func parseRequestCraigslistPageRequestBody(requestBody io.Reader) requestCraigsl
 	err := json.NewDecoder(requestBody).Decode(&req)
 	fatal(err)
 
-	req.SearchURL, err = url.QueryUnescape(req.SearchURL)
-	fatal(err)
+	// do I need this or not?
+	//req.SearchURL, err = url.QueryUnescape(req.SearchURL)
+	//fatal(err)
 
 	return req
 }
