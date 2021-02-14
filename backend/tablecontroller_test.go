@@ -181,3 +181,20 @@ func Test_modelToJSONBytes_takesId(t * testing.T){
 	}
 
 }
+
+func Test_brandNewTableModel_has_tableModel_with_ActiveTableID(t * testing.T){
+	// so that at first the initial state has some ID to look up
+	//
+
+	clearModel_andSetMockModelDiskWriter()
+	model = makeNewModel()
+	setModel(model)
+
+	id := getActiveTableID()
+	table := model.getTableModelByID(id)
+
+	if table.ID != id {
+		t.Fatalf("ID not there")
+	}
+
+}
