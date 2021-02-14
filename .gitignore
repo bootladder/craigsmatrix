@@ -4,3 +4,6 @@ main.js
 table*.json
 allTab*.json
 themodel.json
+*.swp
+release/
+craigsmatrix

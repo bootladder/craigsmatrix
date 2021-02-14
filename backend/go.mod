@@ -1,4 +1,4 @@
-module stupid.com/wtf
+module craigsmatrix
 
 go 1.15
 

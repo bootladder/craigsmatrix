@@ -3,13 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	//"github.com/mmcdole/gofeed"
 )
 
-var defaultmodelpath = "../data/themodel.json"
+var defaultmodelpath = "./data/themodel.json"
 var model Model // = loadModelDataFile()
 
 var modelDiskWriter ModelDiskWriter
@@ -222,14 +221,6 @@ func setActiveTableModelID(id int) {
 	model.ActiveTableModelID = id
 
 	modelDiskWriter.writeModelToDisk()
-}
-
-func openTableID(tableID int) io.Reader {
-	//don't allow out of bounds tableIDs
-	filename := fmt.Sprintf("../data/table%d.json", tableID)
-	fileReader, err := os.Open(filename)
-	fatal(err)
-	return fileReader
 }
 
 func writeTable(tableModel TableModel, tableID int) {
