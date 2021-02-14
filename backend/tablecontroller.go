@@ -182,7 +182,8 @@ func deleteTable() {
 		}
 
 	}
-	model.ActiveTableModelID = 1
+	//for now just set to table model 0, to be sure that it exists
+	model.ActiveTableModelID = model.TableModels[0].ID
 
 	model.TableModels = newTableModels
 	modelDiskWriter.writeModelToDisk()

@@ -184,7 +184,6 @@ func Test_modelToJSONBytes_takesId(t * testing.T){
 
 func Test_brandNewTableModel_has_tableModel_with_ActiveTableID(t * testing.T){
 	// so that at first the initial state has some ID to look up
-	//
 
 	clearModel_andSetMockModelDiskWriter()
 	model = makeNewModel()
@@ -197,4 +196,17 @@ func Test_brandNewTableModel_has_tableModel_with_ActiveTableID(t * testing.T){
 		t.Fatalf("ID not there")
 	}
 
+}
+
+
+func Test_deleteTable_activeTableIsStillValid(t * testing.T){
+	clearModel_andSetMockModelDiskWriter()
+	model = makeNewModel()
+	setModel(model)
+
+
+	addTable()
+	deleteTable()
+	id := getActiveTableID()
+	_ = model.getTableModelByID(id)
 }
