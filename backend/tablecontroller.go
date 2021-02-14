@@ -29,7 +29,7 @@ func loadModelDataFile() Model {
 
 	if err != nil {
 		//create new model, set the model and write to disk
-		fmt.Printf("Not found. Creating a  new one " + defaultmodelpath)
+		fmt.Printf("Model not found. Creating a  new one " + defaultmodelpath + "\n")
 		fileReader, err = os.Create(defaultmodelpath)
 		model = makeNewModel()
 		modelDiskWriter.writeModelToDisk()
@@ -39,8 +39,6 @@ func loadModelDataFile() Model {
 
 	var themodel Model
 	json.Unmarshal(b, &themodel)
-
-	fmt.Printf("The model is: %v", themodel)
 	return themodel
 }
 

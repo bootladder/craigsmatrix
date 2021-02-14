@@ -70,6 +70,7 @@ type requestCraigslistPageResponse struct {
 }
 
 func main() {
+	fmt.Println("craigsmatrix version blah blah blah")
 
 	setModelDiskWriter(RealModelDiskWriter{})
 	setModel(loadModelDataFile())
@@ -94,7 +95,9 @@ func main() {
 
 	//browser.OpenURL("http://localhost:8080/frontend/index.html")
 
-	fmt.Println("serving on 8080")
+	fmt.Println("\nserving on 8080")
+	fmt.Println("Point your browser to http://localhost:8080")
+
 	http.ListenAndServe(":8080", router)
 }
 
