@@ -75,7 +75,7 @@ func main() {
 	setModel(loadModelDataFile())
 
 	router := httprouter.New()
-	router.ServeFiles("/frontend/*filepath", http.Dir("../frontend"))
+	router.ServeFiles("/*filepath", http.Dir("./"))
 
 	router.POST("/api/", requestCraigslistPageHandler)
 	router.POST("/api/table", tableModelHandler)
