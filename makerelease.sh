@@ -26,5 +26,11 @@ cd -
 echo "create data directory"
 mkdir release/data
 
+echo "tag the release" # nothing for now
+rm -rf craigsmatrix
+mv release craigsmatrix
 
+echo "zip the release"
+rm -f craigslistmatrix.zip
+zip -r craigsmatrix.zip craigsmatrix
 
