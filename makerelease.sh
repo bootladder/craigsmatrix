@@ -18,9 +18,15 @@ cp frontend-static/* release
 echo cd into backend
 cd backend
 echo build backend
-go test && go build 
+go test
+go build
+mv craigsmatrix craigsmatrix-linux
+GOOS=darwin go build
+mv craigsmatrix craigsmatrix-mac
+GOOS=windows go build
+
 echo copy backend to release
-cp craigsmatrix ../release
+cp craigsmatrix.exe craigsmatrix-mac craigsmatrix-linux ../release
 cd -
 
 echo "create data directory"

@@ -7,5 +7,8 @@ themodel.json
 *.swp
 release/
 craigsmatrix
+craigsmatrix.exe
+craigsmatrix-linu*
+craigsmatrix-ma*
 craigsmatrix.zip
 
