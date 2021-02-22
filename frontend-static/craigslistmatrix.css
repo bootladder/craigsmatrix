@@ -75,11 +75,21 @@
     table-layout:fixed;
     width:100%;
 }
-#topLabel {
+#tabletopheading{
+    text-align: center;
     background-color: blue;
 }
-#sideLabel {
+#tablesideandtable{
+    display: flex;
     background-color: green;
+}
+#tablesideheading {
+    width: 50px;
+    text-align: center;
+}
+#tablesideheading-text {
+  transform: rotate(-90deg);
+text-align: center;
 }
 
 

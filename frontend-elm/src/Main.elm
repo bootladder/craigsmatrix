@@ -4,12 +4,11 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-
 import Http
 import Json.Decode exposing (..)
-import Json.Encode 
-
+import Json.Encode
 import String
+
 
 
 -- MAIN
@@ -32,7 +31,7 @@ type alias Model =
     { debugBreadcrumb : String
     , currentUrl : String
     , tableModel : TableModel
-    , allTableNamesAndIds : List(TableNameAndId)
+    , allTableNamesAndIds : List TableNameAndId
     , craigslistPageHtmlString : String
     , editingFieldInputValue : String
     , editingFieldIndex : Int
@@ -40,28 +39,37 @@ type alias Model =
     , tableNameEditorValue : String
     }
 
-type FieldType = TopField | SideField
+
+type FieldType
+    = TopField
+    | SideField
+
 
 fieldTypeToString : FieldType -> String
-fieldTypeToString ft = case ft of
-    TopField -> "top"
-    SideField -> "side"
+fieldTypeToString ft =
+    case ft of
+        TopField ->
+            "top"
+
+        SideField ->
+            "side"
 
 
 type alias CellViewModel =
-    {
-      pageUrl : String
+    { pageUrl : String
     , feedUrl : String
     , hits : Int
     }
 
+
 type alias TableModel =
     { name : String
     , id : Int
-    , topHeadings : List (String)
-    , sideHeadings : List (String)
-    , rows : List (List (CellViewModel))
+    , topHeadings : List String
+    , sideHeadings : List String
+    , rows : List (List CellViewModel)
     }
+
 
 type alias TableNameAndId =
     { name : String
@@ -69,14 +77,18 @@ type alias TableNameAndId =
     }
 
 
+
 -- INIT
 
 
 initialTableModel : TableModel
-initialTableModel = 
-        TableModel "dummy uninitted" 1 [] [] [[]] 
+initialTableModel =
+    TableModel "dummy uninitted" 1 [] [] [ [] ]
 
-initialUrl = "https://nothingrequestedyet"
+
+initialUrl =
+    "https://nothingrequestedyet"
+
 
 init : () -> ( Model, Cmd Msg )
 init _ =
@@ -91,7 +103,7 @@ init _ =
         0
         TopField
         ""
-    , Cmd.batch [(httpRequestActiveTableModel), httpRequestAllTableNamesAndIds]
+    , Cmd.batch [ httpRequestActiveTableModel, httpRequestAllTableNamesAndIds ]
     )
 
 
@@ -101,8 +113,8 @@ init _ =
 
 type Msg
     = ReceivedCraigslistPage (Result Http.Error String)
-    | ReceivedTableModel  (Result Http.Error TableModel)
-    | ReceivedAllTableNamesAndIds  (Result Http.Error (List (TableNameAndId)))
+    | ReceivedTableModel (Result Http.Error TableModel)
+    | ReceivedAllTableNamesAndIds (Result Http.Error (List TableNameAndId))
     | NOOPHTTPResult (Result Http.Error ())
     | CellClicked CellViewModel
     | SelectTableClicked Int
@@ -125,142 +137,174 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        CellClicked cellViewModel -> 
-            ( {model 
+        CellClicked cellViewModel ->
+            ( { model
                 | currentUrl = cellViewModel.pageUrl
-                }
+              }
             , httpRequestCraigslistSearchPage cellViewModel.pageUrl
             )
 
         ReceivedCraigslistPage result ->
             case result of
                 Ok fullText ->
-                    ( {model 
-                        | craigslistPageHtmlString = fullText}
+                    ( { model
+                        | craigslistPageHtmlString = fullText
+                      }
                     , Cmd.none
                     )
 
                 Err e ->
-                    ( {model 
-                        | craigslistPageHtmlString = "FAIL"}
+                    ( { model
+                        | craigslistPageHtmlString = "FAIL"
+                      }
                     , Cmd.none
                     )
 
         ReceivedTableModel result ->
             case result of
                 Ok resultTableModel ->
-                    ( {model 
-                        | tableModel = resultTableModel}
+                    ( { model
+                        | tableModel = resultTableModel
+                      }
                     , Cmd.none
                     )
 
                 Err (Http.BadBody s) ->
-                    ( {model 
-                        | craigslistPageHtmlString = s}
-                    , Cmd.none
-                    )
-                Err _ ->
-                    ( {model 
-                        | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"}
+                    ( { model
+                        | craigslistPageHtmlString = s
+                      }
                     , Cmd.none
                     )
 
-        ReceivedAllTableNamesAndIds  result ->
+                Err _ ->
+                    ( { model
+                        | craigslistPageHtmlString = "SOME OTHER HTTP ERROR"
+                      }
+                    , Cmd.none
+                    )
+
+        ReceivedAllTableNamesAndIds result ->
             case result of
                 Ok names ->
-                    ( {model | allTableNamesAndIds = names}, httpRequestActiveTableModel)
+                    ( { model | allTableNamesAndIds = names }, httpRequestActiveTableModel )
 
-                Err e -> ({model
-                        | craigslistPageHtmlString = "FAIL: ReceivedAllTableNamesAndIds"
-                                        ++ (httpErrorToString e)
-                        
-                        }
-                        , Cmd.none)
+                Err e ->
+                    ( { model
+                        | craigslistPageHtmlString =
+                            "FAIL: ReceivedAllTableNamesAndIds"
+                                ++ httpErrorToString e
+                      }
+                    , Cmd.none
+                    )
 
-
-        NOOPHTTPResult  result ->
+        NOOPHTTPResult result ->
             case result of
                 Ok _ ->
-                    ( model, Cmd.none)
+                    ( model, Cmd.none )
 
-                Err e -> ({model
-                        | craigslistPageHtmlString = "FAIL: ReceivedAllTableNamesAndIds"
-                                        ++ (httpErrorToString e)
-                        
-                        }
-                        , Cmd.none)
+                Err e ->
+                    ( { model
+                        | craigslistPageHtmlString =
+                            "FAIL: ReceivedAllTableNamesAndIds"
+                                ++ httpErrorToString e
+                      }
+                    , Cmd.none
+                    )
 
-        SelectTableClicked tableId -> 
-            ( model 
+        SelectTableClicked tableId ->
+            ( model
             , httpRequestTableModel tableId
             )
 
-        AddTableClicked -> (model, 
-                    httpAddTable)
+        AddTableClicked ->
+            ( model
+            , httpAddTable
+            )
 
-        DeleteTableClicked -> (model, httpDeleteTable)
+        DeleteTableClicked ->
+            ( model, httpDeleteTable )
 
-        UpdateTableNameClicked -> (model, httpUpdateTableName <| model.tableNameEditorValue)
+        UpdateTableNameClicked ->
+            ( model, httpUpdateTableName <| model.tableNameEditorValue )
 
-        TableNameEditorChanged input -> 
-            ( {model| tableNameEditorValue = input}, Cmd.none)
+        TableNameEditorChanged input ->
+            ( { model | tableNameEditorValue = input }, Cmd.none )
 
         FieldEditorChanged input ->
-            ( {model| editingFieldInputValue = input}, Cmd.none)
+            ( { model | editingFieldInputValue = input }, Cmd.none )
 
         FieldEditorSubmit ->
-            ( model, 
-                httpSubmitFieldEdit model.editingFieldInputValue 
-                                    model.editingFieldType
-                                    model.tableModel.id 
-                                    model.editingFieldIndex)
+            ( model
+            , httpSubmitFieldEdit model.editingFieldInputValue
+                model.editingFieldType
+                model.tableModel.id
+                model.editingFieldIndex
+            )
 
         TableTopFieldClicked fieldName fieldIndex ->
-            ( {model | editingFieldInputValue = fieldName
-                       ,editingFieldType = TopField
-                       ,editingFieldIndex = fieldIndex
-            }, Cmd.none)
+            ( { model
+                | editingFieldInputValue = fieldName
+                , editingFieldType = TopField
+                , editingFieldIndex = fieldIndex
+              }
+            , Cmd.none
+            )
 
         TableSideFieldClicked fieldName fieldIndex ->
-            ( {model | editingFieldInputValue = fieldName
-                       ,editingFieldType = SideField
-                       ,editingFieldIndex = fieldIndex
-            }, Cmd.none)
+            ( { model
+                | editingFieldInputValue = fieldName
+                , editingFieldType = SideField
+                , editingFieldIndex = fieldIndex
+              }
+            , Cmd.none
+            )
 
+        TableTopFieldAddClicked ->
+            ( model
+            , httpAddTopField model.tableModel.id
+            )
 
-        TableTopFieldAddClicked  ->
-            (model,
-            httpAddTopField model.tableModel.id)
+        TableTopFieldDeleteClicked ->
+            ( model
+            , httpDeleteTopField model.tableModel.id
+            )
 
-        TableTopFieldDeleteClicked  ->
-            (model,
-            httpDeleteTopField model.tableModel.id)
+        TableSideFieldAddClicked ->
+            ( model
+            , httpAddSideField model.tableModel.id
+            )
 
-        TableSideFieldAddClicked  ->
-            (model,
-            httpAddSideField model.tableModel.id)
-
-        TableSideFieldDeleteClicked  ->
-            (model,
-            httpDeleteSideField model.tableModel.id)
-
+        TableSideFieldDeleteClicked ->
+            ( model
+            , httpDeleteSideField model.tableModel.id
+            )
 
         UpdateTableData ->
-            ( model, httpUpdateTableData model.tableModel.id)
+            ( model, httpUpdateTableData model.tableModel.id )
 
-        SelectCategoryClicked category -> 
-            (model, httpUpdateCategory category)
-
+        SelectCategoryClicked category ->
+            ( model, httpUpdateCategory category )
 
 
 httpErrorToString : Http.Error -> String
 httpErrorToString e =
     case e of
-        Http.BadBody s -> s
-        Http.Timeout -> "Timeout"
-        Http.NetworkError -> "Network Error"
-        Http.BadStatus i -> "Bad status"
-        Http.BadUrl s -> s
+        Http.BadBody s ->
+            s
+
+        Http.Timeout ->
+            "Timeout"
+
+        Http.NetworkError ->
+            "Network Error"
+
+        Http.BadStatus i ->
+            "Bad status"
+
+        Http.BadUrl s ->
+            s
+
+
 
 -- SUBSCRIPTIONS
 
@@ -276,129 +320,149 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div [id "container"] 
-    [ pageHeader
-    , tableSelectionWidget model
-    , categoryLabel
-    , fieldEditor model.editingFieldInputValue
-    , div [id "myTable"] [renderTable model.tableModel]
-    , div [id "urlView"] [text model.currentUrl]
-    , craigslistSearchPage  model.craigslistPageHtmlString
-    ]
+    div [ id "container" ]
+        [ pageHeader
+        , tableSelectionWidget model
+        , categoryLabel
+        , fieldEditor model.editingFieldInputValue
+        , div [ id "myTable" ] [ renderTable model.tableModel ]
+        , div [ id "urlView" ] [ text model.currentUrl ]
+        , craigslistSearchPage model.craigslistPageHtmlString
+        ]
+
 
 pageHeader : Html Msg
 pageHeader =
-    div [id "pageHeader"] [ 
-        h1 [] [text "CraigslistMatrix."]
-        , h2 [] [text "Take your search to the next dimension...  the second dimension."]
+    div [ id "pageHeader" ]
+        [ h1 [] [ text "CraigslistMatrix." ]
+        , h2 [] [ text "Take your search to the next dimension...  the second dimension." ]
         ]
+
 
 tableSelectionWidget : Model -> Html Msg
 tableSelectionWidget model =
-        div [id "tableSelectionWidget"]
-            [ div [id "left"] [ div [id "tableNameLabel"] [text <| model.tableModel.name]
-                              , div [id "tableSelect"] [tableSelect model]
-                              ]
-            , div [id "right"] [ 
-                div [id "tableSelectionButtons"] [
-                    button [ id "btnAddTable", onClick AddTableClicked ] [ text "Add New Table"]
-                    ,button [ id "btnDeleteTable", onClick DeleteTableClicked ] [ text "Delete This Table"]
-                    ,button [ onClick <| UpdateTableNameClicked] [ text "Update Table Name"]
-                    , input [ onInput TableNameEditorChanged
-                        , Html.Attributes.value model.tableNameEditorValue 
-                        , placeholder "Update Table Name"] []
+    div [ id "tableSelectionWidget" ]
+        [ div [ id "left" ]
+            [ div [ id "tableNameLabel" ] [ text <| model.tableModel.name ]
+            , div [ id "tableSelect" ] [ tableSelect model ]
+            ]
+        , div [ id "right" ]
+            [ div [ id "tableSelectionButtons" ]
+                [ button [ id "btnAddTable", onClick AddTableClicked ] [ text "Add New Table" ]
+                , button [ id "btnDeleteTable", onClick DeleteTableClicked ] [ text "Delete This Table" ]
+                , button [ onClick <| UpdateTableNameClicked ] [ text "Update Table Name" ]
+                , input
+                    [ onInput TableNameEditorChanged
+                    , Html.Attributes.value model.tableNameEditorValue
+                    , placeholder "Update Table Name"
                     ]
+                    []
+                ]
             ]
-            ]
+        ]
+
 
 tableSelect : Model -> Html Msg
 tableSelect model =
-        select [] 
-            (List.indexedMap 
-            (\i tablenameandid -> 
-                option 
-                [ onClick <| SelectTableClicked tablenameandid.id 
-                , selected (if tablenameandid.id == model.tableModel.id then True else False)] 
-                [text tablenameandid.name]
-            ) 
-            model.allTableNamesAndIds)
+    select []
+        (List.indexedMap
+            (\i tablenameandid ->
+                option
+                    [ onClick <| SelectTableClicked tablenameandid.id
+                    , selected
+                        (if tablenameandid.id == model.tableModel.id then
+                            True
+
+                         else
+                            False
+                        )
+                    ]
+                    [ text tablenameandid.name ]
+            )
+            model.allTableNamesAndIds
+        )
+
 
 categoryLabel : Html Msg
-categoryLabel = 
-        div [id "categoryLabel"] 
-            [ span [] [text "Category"]
-            , select [] (
-
-                List.map (\category -> option [ onClick <| SelectCategoryClicked category] [text category])
-                [
-                "community"
-                ,"events"
-                ,"for sale"
-                ,"gigs"
-                ,"housing"
-                ,"jobs"
-                ,"resumes"
-                ,"services"
+categoryLabel =
+    div [ id "categoryLabel" ]
+        [ span [] [ text "Category" ]
+        , select []
+            (List.map (\category -> option [ onClick <| SelectCategoryClicked category ] [ text category ])
+                [ "community"
+                , "events"
+                , "for sale"
+                , "gigs"
+                , "housing"
+                , "jobs"
+                , "resumes"
+                , "services"
                 ]
-                  
             )
-
-            ]
+        ]
 
 
 fieldEditor : String -> Html Msg
 fieldEditor editorValue =
-        div [id "fieldEditor"] 
-        [ span [] [text "Field Editor" ]
-        , input [ onInput FieldEditorChanged
-                , Html.Attributes.value editorValue 
-                , placeholder "Click a row or column header"
-                ] []
-        , button [ onClick FieldEditorSubmit ] [text "Submit"]
+    div [ id "fieldEditor" ]
+        [ span [] [ text "Field Editor" ]
+        , input
+            [ onInput FieldEditorChanged
+            , Html.Attributes.value editorValue
+            , placeholder "Click a row or column header"
+            ]
+            []
+        , button [ onClick FieldEditorSubmit ] [ text "Submit" ]
         ]
+
 
 renderTable : TableModel -> Html Msg
 renderTable tableModel =
     let
-        pairs = List.map2 Tuple.pair tableModel.sideHeadings tableModel.rows
+        pairs =
+            List.map2 Tuple.pair tableModel.sideHeadings tableModel.rows
 
-        renderedRows = List.indexedMap 
-                        (\i (heading, cells) -> renderRow i heading cells)
-                        pairs
+        renderedRows =
+            List.indexedMap
+                (\i ( heading, cells ) -> renderRow i heading cells)
+                pairs
     in
-    table [] (
-        [renderTableHeadersRow tableModel.topHeadings]
-        ++
-        renderedRows
-        ++
-        [tr [id "myRow"] [button [onClick TableSideFieldAddClicked] [text "add"]]]
-        ++
-        [tr [id "myRow"] [button [onClick TableSideFieldDeleteClicked] [text "del"]]]
-    )
+    div []
+        -- table consists of the top, and under it is the side and then the table
+        [ div [ id "tabletopheading" ] [ text "Cities" ]
+        , div [ id "tablesideandtable" ]
+            [ div [ id "tablesideheading" ] [ div [ id "tablesideheading-text" ] [ text "Queries" ] ]
+            , table []
+                ([ renderTableHeadersRow tableModel.topHeadings ]
+                    ++ renderedRows
+                    ++ [ tr [ id "myRow" ] [ button [ onClick TableSideFieldAddClicked ] [ text "add" ] ] ]
+                    ++ [ tr [ id "myRow" ] [ button [ onClick TableSideFieldDeleteClicked ] [ text "del" ] ] ]
+                )
+            ]
+        ]
 
-renderTableHeadersRow : List (String) -> Html Msg
-renderTableHeadersRow headings  =
-    tr [] (
-            [ th [] [button [onClick UpdateTableData] [text "UPDATE"]] ]
-            ++
-            List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i)] [text heading]) headings
-            ++
-            [ th [] [button [onClick TableTopFieldAddClicked] [text "add"]]]
-            ++
-            [ th [] [button [onClick TableTopFieldDeleteClicked] [text "del"]]]
-    )
 
-renderRow : Int -> String -> List (CellViewModel) ->  Html Msg
+renderTableHeadersRow : List String -> Html Msg
+renderTableHeadersRow headings =
+    tr []
+        ([ th [] [ button [ onClick UpdateTableData ] [ text "UPDATE" ] ] ]
+            ++ List.indexedMap (\i heading -> th [ onClick (TableTopFieldClicked heading i) ] [ text heading ]) headings
+            ++ [ th [] [ button [ onClick TableTopFieldAddClicked ] [ text "add" ] ] ]
+            ++ [ th [] [ button [ onClick TableTopFieldDeleteClicked ] [ text "del" ] ] ]
+        )
+
+
+renderRow : Int -> String -> List CellViewModel -> Html Msg
 renderRow index heading cellViewModels =
-        tr [id "myRow"] ( 
-                th [onClick (TableSideFieldClicked heading index)] [text heading]
-                ::
-                  List.map renderCellViewModel cellViewModels
-            )
+    tr [ id "myRow" ]
+        (th [ onClick (TableSideFieldClicked heading index) ] [ text heading ]
+            :: List.map renderCellViewModel cellViewModels
+        )
+
 
 renderCellViewModel : CellViewModel -> Html Msg
 renderCellViewModel cellViewModel =
-    td [class "blueCell", onClick (CellClicked cellViewModel)] [text <| String.fromInt cellViewModel.hits]
+    td [ class "blueCell", onClick (CellClicked cellViewModel) ] [ text <| String.fromInt cellViewModel.hits ]
 
 
 craigslistSearchPage : String -> Html msg
@@ -407,7 +471,10 @@ craigslistSearchPage html =
         [ Html.Attributes.property "content" (Json.Encode.string html) ]
         []
 
+
+
 -- HTTP
+
 
 httpRequestCraigslistSearchPage : String -> Cmd Msg
 httpRequestCraigslistSearchPage url =
@@ -421,6 +488,7 @@ httpRequestCraigslistSearchPage url =
         , expect = Http.expectJson (\jsonResult -> ReceivedCraigslistPage jsonResult) craigslistPageDecoder
         }
 
+
 httpRequestTableModel : Int -> Cmd Msg
 httpRequestTableModel id =
     Http.post
@@ -432,6 +500,7 @@ httpRequestTableModel id =
         , url = "http://localhost:8080/api/table"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
+
 
 httpRequestAllTableNamesAndIds : Cmd Msg
 httpRequestAllTableNamesAndIds =
@@ -454,8 +523,8 @@ httpSubmitFieldEdit fieldValue fieldType tableId fieldIndex =
                 Json.Encode.object
                     [ ( "tableId", Json.Encode.int tableId )
                     , ( "fieldType", Json.Encode.string <| fieldTypeToString fieldType )
-                    , ( "fieldIndex", Json.Encode.int fieldIndex)
-                    , ( "fieldValue", Json.Encode.string fieldValue)
+                    , ( "fieldIndex", Json.Encode.int fieldIndex )
+                    , ( "fieldValue", Json.Encode.string fieldValue )
                     ]
         , url = "http://localhost:8080/api/fieldedit"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
@@ -473,6 +542,7 @@ httpAddTopField tableId =
         , url = "http://localhost:8080/api/addtopfield"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
+
 
 httpAddSideField : Int -> Cmd Msg
 httpAddSideField tableId =
@@ -499,6 +569,7 @@ httpDeleteTopField tableId =
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
 
+
 httpDeleteSideField : Int -> Cmd Msg
 httpDeleteSideField tableId =
     Http.post
@@ -512,7 +583,6 @@ httpDeleteSideField tableId =
         }
 
 
- 
 httpAddTable : Cmd Msg
 httpAddTable =
     Http.post
@@ -524,7 +594,8 @@ httpAddTable =
         , url = "http://localhost:8080/api/addtable"
         , expect = Http.expectJson (\jsonResult -> ReceivedAllTableNamesAndIds jsonResult) allTableNamesAndIdsDecoder
         }
- 
+
+
 httpDeleteTable : Cmd Msg
 httpDeleteTable =
     Http.post
@@ -549,6 +620,7 @@ httpUpdateTableData tableId =
         , url = "http://localhost:8080/api/updatetabledata"
         , expect = Http.expectJson (\jsonResult -> ReceivedTableModel jsonResult) tableModelDecoder
         }
+
 
 httpRequestActiveTableModel : Cmd Msg
 httpRequestActiveTableModel =
@@ -576,7 +648,6 @@ httpUpdateTableName name =
         }
 
 
-
 httpUpdateCategory : String -> Cmd Msg
 httpUpdateCategory category =
     Http.post
@@ -590,40 +661,43 @@ httpUpdateCategory category =
         }
 
 
+
 -- DECODER
+
 
 craigslistPageDecoder : Decoder String
 craigslistPageDecoder =
     field "response" Json.Decode.string
 
+
 tableModelDecoder : Decoder TableModel
-tableModelDecoder = 
+tableModelDecoder =
     Json.Decode.map5 TableModel
         (Json.Decode.field "name" Json.Decode.string)
-        (Json.Decode.field "id" (Json.Decode.int))
+        (Json.Decode.field "id" Json.Decode.int)
         (Json.Decode.field "topHeadings" (Json.Decode.list string))
         (Json.Decode.field "sideHeadings" (Json.Decode.list string))
-        rowsDecoder 
-  
+        rowsDecoder
 
-rowsDecoder : Decoder (List (List (CellViewModel)))
+
+rowsDecoder : Decoder (List (List CellViewModel))
 rowsDecoder =
-  Json.Decode.field "rows" (Json.Decode.list ((Json.Decode.list cellViewModelDecoder)))
+    Json.Decode.field "rows" (Json.Decode.list (Json.Decode.list cellViewModelDecoder))
+
 
 cellViewModelDecoder : Decoder CellViewModel
 cellViewModelDecoder =
     Json.Decode.map3 CellViewModel
         (Json.Decode.field "pageUrl" Json.Decode.string)
         (Json.Decode.field "feedUrl" Json.Decode.string)
-
-
         (Json.Decode.field "hits" Json.Decode.int)
 
-allTableNamesAndIdsDecoder : Decoder (List (TableNameAndId))
+
+allTableNamesAndIdsDecoder : Decoder (List TableNameAndId)
 allTableNamesAndIdsDecoder =
-    (Json.Decode.list tableNameAndIdDecoder)
+    Json.Decode.list tableNameAndIdDecoder
 
 
 tableNameAndIdDecoder : Decoder TableNameAndId
 tableNameAndIdDecoder =
-    Json.Decode.map2 TableNameAndId (Json.Decode.field "name" Json.Decode.string) (Json.Decode.field "id" Json.Decode.int) 
+    Json.Decode.map2 TableNameAndId (Json.Decode.field "name" Json.Decode.string) (Json.Decode.field "id" Json.Decode.int)
