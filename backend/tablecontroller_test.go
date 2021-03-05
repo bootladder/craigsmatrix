@@ -210,3 +210,17 @@ func Test_deleteTable_activeTableIsStillValid(t * testing.T){
 	id := getActiveTableID()
 	_ = model.getTableModelByID(id)
 }
+
+func Test_deleteTopField_works(t * testing.T){
+	clearModel_andSetMockModelDiskWriter()
+	model = makeNewModel()
+	setModel(model)
+
+
+	addTable()
+	id := model.getActiveTableModel().ID
+	addTopField(id)
+	addTopField(id)
+	addTopField(id)
+	deleteTopField(id)
+}
